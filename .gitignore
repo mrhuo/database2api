@@ -22,6 +22,7 @@ bin/
 *.iml
 *.ipr
 out/
+target/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
