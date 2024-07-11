@@ -64,6 +64,48 @@ IGNORED_TABLES=
 STATIC_WEB_ENABLED=true
 ```
 
+###### 数据库连接字符串模板
+
+1. Sqlite
+```text
+DB_URL=jdbc:sqlite://G:/db.db
+```
+
+2. MySQL
+```text
+DB_URL=jdbc:mysql://127.0.0.1:3306/db?useSSL=false&serverTimezone=UTC&charset=utf8mb
+```
+
+3. PostgreSQL
+```text
+DB_URL=jdbc:postgresql://127.0.0.1:5432/db
+```
+
+4. Microsoft SQL Server
+```text
+DB_URL=jdbc:sqlserver://;serverName=rm-abc.sqlserver.rds.aliyuncs.com;port=1433;databaseName=db_cms
+```
+
+5. Oracle
+```text
+TODO
+```
+
+6. IBM DB2
+```text
+TODO
+```
+
+7. Sybase
+```text
+TODO
+```
+
+8. Informix
+```text
+TODO
+```
+
 ###### 运行方式
 
 ```shell
@@ -114,6 +156,12 @@ java -jar database2api.jar
 ![screenshots/image3.png](screenshots/image3.png)
 
 可以看到，仅仅是配置了数据库链接，就自动生成一个完整的可用的API接口。
+
+#### 扩展开发，TODO
+
+- [ ] 接口授权访问
+- [ ] 数据表表名安全隐患
+- [ ] 自动生成 UI 管理后台
 
 #### 如何联系我？
 
