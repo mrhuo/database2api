@@ -1,0 +1,4 @@
+*.ftl linguist-language=Kotlin
+*.html linguist-language=Kotlin
+*.xml linguist-language=Kotlin
+*.kt linguist-language=Kotlin

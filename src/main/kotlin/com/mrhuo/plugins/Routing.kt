@@ -1,9 +1,6 @@
 package com.mrhuo.plugins
 
-import com.mrhuo.Database2Api
-import com.mrhuo.GITHUB_URL
-import com.mrhuo.QueryDataModel
-import com.mrhuo.getRootPath
+import com.mrhuo.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.freemarker.*
@@ -61,10 +58,14 @@ fun Application.configureRouting() {
                     this.orderField = orderBy
                     this.sort = sort
                 }
-                call.respond(Database2Api.getTableDataPaged(tableName, model))
+                call.respond(
+                    R.ok(Database2Api.getTableDataPaged(tableName, model))
+                )
             }
             get("/${prefix}/${tableName}/all") {
-                call.respond(Database2Api.getTableData(tableName))
+                call.respond(
+                    R.ok(Database2Api.getTableData(tableName))
+                )
             }
             get("/${prefix}/${tableName}/{id}") {
                 val table = Database2Api.getAllTable().first() { it.tableName == tableName }
@@ -78,7 +79,9 @@ fun Application.configureRouting() {
                     idField = table.pkNames.first()
                 }
                 val obj = call.parameters["id"]
-                call.respond(Database2Api.getTableDataById(table.tableName, idField, obj))
+                call.respond(
+                    R.ok(Database2Api.getTableDataById(table.tableName, idField, obj))
+                )
             }
         }
     }

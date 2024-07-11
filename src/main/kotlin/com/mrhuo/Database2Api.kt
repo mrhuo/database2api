@@ -61,7 +61,7 @@ object Database2Api {
                 "## DEFAULT CONFIG FOR database2api",
                 "# API 默认端口",
                 "API_PORT=8080",
-                "# 生成API的前缀，如设置 api/v1 后，则API变为：http://localhost:{PORT}api/v1/xxxxxx",
+                "# 生成API的前缀，如设置 api/v1 后，则API变为：http://localhost:{PORT}/api/v1/xxxxxx",
                 "API_PREFIX=api",
                 "# 是否启用 API 文档，地址 http://localhost:{PORT}",
                 "API_INDEX_ENABLED=true",
@@ -71,8 +71,10 @@ object Database2Api {
                 "DB_USER=root",
                 "# 数据库密码",
                 "DB_PWD=",
-                "# 生成API的数据表名称，为空则所有的表都生成API",
+                "# 生成API的数据表名称，为空则所有的表都生成API，多个使用英文逗号分割",
                 "INCLUDE_TABLES=",
+                "# 需要忽略的数据表名称，如果不为空，则指定的表名被过滤，多个使用英文逗号分割",
+                "IGNORED_TABLES=",
                 "# 是否启用静态网站，启用后，则创建web目录，放入静态资源即可访问",
                 "STATIC_WEB_ENABLED=true",
             ),
@@ -187,7 +189,12 @@ object Database2Api {
             if (StrUtil.isNotEmpty(includeTables)) {
                 includeTableNames.addAll(includeTables.split(","))
             }
-            mTables = mDbStructureHelper.getTables(includeTableNames)
+            val ignoredTables = setting.getStr("IGNORED_TABLES", "")
+            val ignoredTableNames: MutableList<String> = mutableListOf()
+            if (StrUtil.isNotEmpty(ignoredTables)) {
+                ignoredTableNames.addAll(ignoredTables.split(","))
+            }
+            mTables = mDbStructureHelper.getTables(includeTableNames, ignoredTableNames)
             mTables.forEach { table ->
                 table.columns.forEach { column ->
                     // 解决格式化成JSON后出现的问题

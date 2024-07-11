@@ -181,6 +181,7 @@
             z-index: 102;
             padding: 10px;
             flex-direction: column;
+            overflow: hidden;
         }
 
         .test-api-container header {
@@ -213,10 +214,13 @@
         .test-api-container main {
             flex: 1;
             display: flex;
+            max-height: calc(94vh - 55px);
         }
 
         .test-api-container ul {
             width: 300px;
+            overflow-y: auto;
+            max-height: 100%;
         }
 
         .test-api-container ul li {
@@ -310,7 +314,7 @@
                         <td>${column.typeName}</td>
                         <td>${column.size}</td>
                         <td>${column.nullable?c}</td>
-                        <td>${column.comment}</td>
+                        <td>${column.comment!''}</td>
                     </tr>
                 </#list>
                 </tbody>

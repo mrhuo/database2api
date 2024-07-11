@@ -46,13 +46,16 @@ class DbStructureHelper(
     /**
      * 获取所有表的表结构
      */
-    fun getTables(includes: List<String> = listOf()): List<Table> {
+    fun getTables(includes: List<String> = listOf(), ignored: List<String> = listOf()): List<Table> {
         if (mTableList != null) {
             return mTableList!!
         }
         var tableNames = getTablesNames()
         if (includes.isNotEmpty()) {
             tableNames = tableNames.filter { includes.contains(it) }
+        }
+        if (ignored.isNotEmpty()) {
+            tableNames = tableNames.filterNot { ignored.contains(it) }
         }
         mTableList = tableNames.map { tableName ->
             getTable(tableName)

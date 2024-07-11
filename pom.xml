@@ -13,6 +13,10 @@
         <kotlin_version>1.8.22</kotlin_version>
         <logback_version>1.2.12</logback_version>
         <slf4j_version>1.7.36</slf4j_version>
+        <mysql_version>8.0.29</mysql_version>
+        <sqlite_version>3.46.0.0</sqlite_version>
+        <postgresql_version>42.6.0</postgresql_version>
+        <mssql_version>12.6.3.jre8</mssql_version>
         <hutool_version>5.8.26</hutool_version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
@@ -77,7 +81,24 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.29</version>
+            <version>${mysql_version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>${sqlite_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql_version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc -->
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>${mssql_version}</version>
         </dependency>
         <dependency>
             <groupId>cn.hutool</groupId>
@@ -86,13 +107,13 @@
         </dependency>
     </dependencies>
     <build>
+        <finalName>database2api</finalName>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <resources>
             <resource>
                 <directory>${project.basedir}/src/main/resources</directory>
             </resource>
         </resources>
-
         <plugins>
             <plugin>
                 <artifactId>kotlin-maven-plugin</artifactId>

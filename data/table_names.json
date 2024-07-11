@@ -1,1 +1,1 @@
-["sys_areas","sys_dictionary","sys_dictionary_data","sys_email_record","sys_file_record","sys_info","sys_info_category","sys_local_life_request","sys_local_life_shop","sys_login_record","sys_menu","sys_operation_record","sys_organization","sys_role","sys_role_menu","sys_tenant","sys_user","sys_user_day_task","sys_user_file","sys_user_invite_relation","sys_user_role"]
+["CHANNEL_DOOR_INFO","CHANNEL_DOOR_LAT_LNG","DEVICE","DEVICE_BOX","DEVICE_CHECK","DEVICE_DTX","HIGH_RAIL_CHANNEL","PDF_CATEGORY","ROUTE_LAT_LNG","ROUTE_MARKER_EXTRA_INFO","SYSTEM_SETTING","android_metadata"]
