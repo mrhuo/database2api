@@ -108,10 +108,10 @@
     </dependencies>
     <build>
         <finalName>database2api</finalName>
-        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
+        <sourceDirectory>${project.basedir}/source/src/main/kotlin</sourceDirectory>
         <resources>
             <resource>
-                <directory>${project.basedir}/src/main/resources</directory>
+                <directory>${project.basedir}/source/src/main/resources</directory>
             </resource>
         </resources>
         <plugins>

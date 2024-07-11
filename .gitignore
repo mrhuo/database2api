@@ -23,6 +23,7 @@ bin/
 *.ipr
 out/
 target/
+data/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
