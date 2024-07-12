@@ -10,7 +10,7 @@
 
 #### 支持哪些数据库？
 
-常见的关系数据库如：Sqlite、Oracle、MySQL、PostgreSQL、IBM DB2、Microsoft SQL Server、Sybase、Informix 等数据库都支持。
+常见的关系数据库如：Sqlite、Oracle、MySQL、PostgreSQL、IBM DB2、Microsoft SQL Server、Sybase、Informix、MariaDb 等数据库都支持。
 
 #### 为什么要创造 **database2api**？
 
@@ -24,6 +24,7 @@
 - [x] MySQL
 - [x] PostgreSQL
 - [x] Microsoft SQL Server
+- [x] MariaDb
 - [ ] Oracle
 - [ ] IBM DB2
 - [ ] Sybase
@@ -86,22 +87,28 @@ DB_URL=jdbc:postgresql://127.0.0.1:5432/db
 DB_URL=jdbc:sqlserver://;serverName=rm-abc.sqlserver.rds.aliyuncs.com;port=1433;databaseName=db_cms
 ```
 
-5. Oracle
+5. MariaDb
+
+```text
+jdbc:mariadb://127.0.0.1:3306/mysql?useSSL=false&serverTimezone=UTC&charset=utf8mb4
+```
+
+6. Oracle
 ```text
 TODO
 ```
 
-6. IBM DB2
+7. IBM DB2
 ```text
 TODO
 ```
 
-7. Sybase
+8. Sybase
 ```text
 TODO
 ```
 
-8. Informix
+9. Informix
 ```text
 TODO
 ```
