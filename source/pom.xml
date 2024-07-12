@@ -68,14 +68,28 @@
             <artifactId>slf4j-api</artifactId>
             <version>1.7.36</version>
         </dependency>
+        <!--jackson-->
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-serialization-jackson-jvm</artifactId>
             <version>${ktor_version}</version>
         </dependency>
+        <!--freemarker-->
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-server-freemarker-jvm</artifactId>
+            <version>${ktor_version}</version>
+        </dependency>
+        <!--auth-->
+        <dependency>
+            <groupId>io.ktor</groupId>
+            <artifactId>ktor-server-auth-jvm</artifactId>
+            <version>${ktor_version}</version>
+        </dependency>
+        <!--JWT-->
+        <dependency>
+            <groupId>io.ktor</groupId>
+            <artifactId>ktor-server-auth-jwt-jvm</artifactId>
             <version>${ktor_version}</version>
         </dependency>
         <dependency>

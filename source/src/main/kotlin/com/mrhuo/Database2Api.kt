@@ -3,6 +3,7 @@ package com.mrhuo
 import cn.hutool.core.io.FileUtil
 import cn.hutool.core.io.resource.ResourceUtil
 import cn.hutool.core.util.CharsetUtil
+import cn.hutool.core.util.RandomUtil
 import cn.hutool.core.util.StrUtil
 import cn.hutool.db.Entity
 import cn.hutool.db.PageResult
@@ -12,8 +13,16 @@ import cn.hutool.json.JSONUtil
 import cn.hutool.log.StaticLog
 import cn.hutool.setting.Setting
 import java.io.File
+import java.time.Duration
 
 object Database2Api {
+    const val AUTH_TYPE_BASIC = "Basic"
+    const val AUTH_TYPE_JWT = "JWT"
+    val JWT_SECRET: String = RandomUtil.randomString(32)
+    val JWT_ISSUER: String = "Database2Api"
+    val JWT_EXPIRED_AT: Long = Duration.ofDays(2).toMillis()
+
+    private val AUTH_TYPES = listOf(AUTH_TYPE_BASIC, AUTH_TYPE_JWT)
     private var mInit = false
     private lateinit var mDataDir: File
     private lateinit var mSettingFile: File
@@ -23,6 +32,9 @@ object Database2Api {
     private var mTables: List<Table> = listOf()
     private var mApiPort: Int = 8080
     private var mApiPrefix: String = "api"
+    private var mApiAuthEnabled: Boolean = false
+    private var mApiAuthType: String = ""
+    private var mApiAuthUsers: List<Pair<String, String>> = listOf()
     private var mEnabledApiIndex: Boolean = true
     private var mEnabledStaticWeb: Boolean = true
 
@@ -65,6 +77,12 @@ object Database2Api {
                 "API_PREFIX=api",
                 "# 是否启用 API 文档，地址 http://localhost:{PORT}",
                 "API_INDEX_ENABLED=true",
+                "# 是否启用接口授权访问功能，默认不启用",
+                "API_AUTH_ENABLED=false",
+                "# 接口授权访问，支持：Basic, JWT。为空不启用",
+                "API_AUTH_TYPE=",
+                "# 接口允许访问的用户名密码列表，用户名和密码之间英文冒号隔开，多用户英文逗号分隔",
+                "API_AUTH_USERS=admin:123456,user:1234",
                 "# 数据库默认链接地址",
                 "DB_URL=jdbc:mysql://localhost:3306/db?useSSL=false&serverTimezone=UTC&charset=utf8mb4",
                 "# 数据库用户名",
@@ -91,8 +109,11 @@ object Database2Api {
         val setting = getSetting()
         mApiPort = setting.getInt("API_PORT", 8080)
         mApiPrefix = setting.getStr("API_PREFIX", "api")
+        mApiAuthEnabled = setting.getBool("API_AUTH_ENABLED", false)
+        mApiAuthType = setting.getStr("API_AUTH_TYPE", "")
         mEnabledApiIndex = setting.getBool("API_INDEX_ENABLED", true)
         mEnabledStaticWeb = setting.getBool("STATIC_WEB_ENABLED", true)
+        // 是否启用静态网站
         if (mEnabledStaticWeb) {
             val webDir = File(mDataDir, "web")
             if (!webDir.exists()) {
@@ -105,6 +126,27 @@ object Database2Api {
                 webIndex.writeText(indexFileUrl.readText())
             }
             StaticLog.info("Database2Api: 静态网站主页[http://127.0.0.1:${mApiPort}/web/index.html]")
+        }
+        // 是否启用 API 授权访问
+        if (mApiAuthEnabled && StrUtil.isNotEmpty(mApiAuthType) && AUTH_TYPES.contains(mApiAuthType)) {
+            val userListStr = setting.getStr("API_AUTH_USERS", "")
+            if (userListStr.isNullOrEmpty()) {
+                throw Exception("Database2Api: 您开启了API授权访问，但是没有配置用户名和密码列表[API_AUTH_USERS]")
+            }
+            StaticLog.info("Database2Api: 已启用API授权访问功能，API授权方式[${mApiAuthType}]")
+            val userList: MutableList<Pair<String, String>> = mutableListOf()
+            userListStr.split(",").map {
+                val userPwdPair = it.split(":")
+                val username = userPwdPair[0]
+                val userpass = userPwdPair[1]
+                if (StrUtil.isNotEmpty(username)  && StrUtil.isNotEmpty(userpass)) {
+                    userList.add(username to userpass)
+                    StaticLog.info("Database2Api: 允许用户[${username}]使用密码[${userpass}]访问")
+                } else {
+                    StaticLog.warn("Database2Api: 请检查API授权访问用户配置[${it}]是否正确")
+                }
+            }
+            mApiAuthUsers = userList
         }
     }
 
@@ -251,11 +293,34 @@ object Database2Api {
     }
 
     /**
+     * 是否开启 API 授权访问
+     */
+    fun isEnabledApiAuth(): Boolean {
+        return mApiAuthEnabled
+    }
+
+    /**
+     * API 授权访问方式，如：Basic,JWT
+     */
+    fun getApiAuthType(): String {
+        return mApiAuthType
+    }
+
+    /**
+     * API 授权访问的用户列表
+     */
+    fun getApiAuthUsers(): List<Pair<String, String>> {
+        return mApiAuthUsers
+    }
+
+    /**
      * 是否开启静态网站
      */
     fun isEnabledStaticWeb(): Boolean {
         return mEnabledStaticWeb
     }
+
+
 }
 
 class QueryDataModel {

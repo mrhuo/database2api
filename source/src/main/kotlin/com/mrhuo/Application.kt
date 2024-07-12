@@ -20,5 +20,6 @@ fun Application.module() {
     configureMonitoring()
     configureSerialization()
     configureFreeMarker()
+    configureAuthentication()
     configureRouting()
 }

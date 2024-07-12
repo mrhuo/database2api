@@ -51,6 +51,12 @@ API_PORT=8080
 API_PREFIX=api
 # 是否启用 API 文档，地址 http://localhost:{PORT}
 API_INDEX_ENABLED=true
+# 是否启用接口授权访问功能
+API_AUTH_ENABLED=false
+# 接口授权访问，支持：Basic, JWT,
+API_AUTH_TYPE=JWT
+# 接口允许访问的用户名密码列表
+API_AUTH_USERS=admin:123456,user:1234
 # 数据库默认链接地址
 DB_URL=jdbc:sqlite://G:/database2api-test/sqlite/fqb.db
 # 数据库用户名
@@ -164,9 +170,60 @@ java -jar database2api.jar
 
 可以看到，仅仅是配置了数据库链接，就自动生成一个完整的可用的API接口。
 
+#### 接口加密访问
+
+现已支持 Basic、JWT 对API授权，配置如下：
+
+```text
+# 是否启用接口授权访问功能
+API_AUTH_ENABLED=false
+# 接口授权访问，支持：Basic, JWT,
+API_AUTH_TYPE=JWT
+# 接口允许访问的用户名密码列表
+API_AUTH_USERS=admin:123456,user:1234
+```
+
+###### Basic 授权
+
+- 需要配置 `API_AUTH_ENABLED=true` 开启API授权
+- 需要配置 `API_AUTH_TYPE=Basic` （注意大小写）
+- 需要配置 `API_AUTH_USERS=user:pass,user1:pass1`，设置允许访问的用户密码对
+
+> Basic 授权失败演示
+
+![授权失败](screenshots/auth-basic-failed.png)
+
+> Basic 授权成功演示
+
+![授权成功](screenshots/auth-basic-success.png)
+
+###### JWT 授权
+
+- 需要配置 `API_AUTH_ENABLED=true` 开启API授权
+- 需要配置 `API_AUTH_TYPE=JWT` （注意大小写）
+- 需要配置 `API_AUTH_USERS=user:pass,user1:pass1`，设置允许访问的用户密码对
+
+注意，JWT授权，单独提供了一个用户登录接口，路劲为 `/api/api-user-login`，前面的 `api` 前缀，由配置 `API_PREFIX` 来设置
+
+> JWT 验证失败演示
+
+![JWT 验证失败](screenshots/auth-jwt-failed.png)
+
+> JWT 验证成功演示
+
+![JWT 验证成功](screenshots/auth-jwt-success.png)
+
+> JWT 用户登录成功演示
+
+![用户登录成功](screenshots/auth-jwt-login.png)
+
+> JWT 用户登录失败演示
+
+![用户登录失败](screenshots/auth-jwt-login-failed.png)
+
 #### 扩展开发，TODO
 
-- [ ] 接口授权访问
+- [x] 接口授权访问，已支持：Basic，JWT
 - [ ] 数据表表名安全隐患
 - [ ] 自动生成 UI 管理后台
 
