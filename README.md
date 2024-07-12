@@ -233,6 +233,12 @@ API_AUTH_USERS=admin:123456,user:1234
 admin@mrhuo.com
 ```
 
+#### 开源地址
+
+```text
+https://github.com/mrhuo/database2api
+```
+
 #### 版权提示
 
 MIT
