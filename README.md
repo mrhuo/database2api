@@ -6,7 +6,7 @@
 
 #### **database2api**是使用什么开发的？
 
-使用 [Ktor](https://ktor.io/) + [hutool](https://hutool.cn/) 开发，使用 **Netty** 作为内置服务器，请求速度极快。
+使用 [Kotlin](https://kotlinlang.org/) + [Ktor](https://ktor.io/)  开发，使用 **Netty** 作为内置服务器，请求速度极快。
 
 #### 支持哪些数据库？
 
