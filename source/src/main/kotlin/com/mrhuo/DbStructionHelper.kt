@@ -63,6 +63,10 @@ class DbStructureHelper(
         return mTableList!!
     }
 
+    fun getDbInstance(): Db {
+        return Db.use(dataSource)
+    }
+
     /**
      * 获取表数据
      */

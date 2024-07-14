@@ -1,5 +1,9 @@
 package com.mrhuo.plugins
 
+import cn.hutool.core.io.FileUtil
+import cn.hutool.json.JSONUtil
+import cn.hutool.log.StaticLog
+import cn.hutool.script.ScriptUtil
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.mrhuo.*
@@ -11,8 +15,12 @@ import io.ktor.server.http.content.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.util.*
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.util.*
+import javax.script.Invocable
+
 
 fun Application.configureRouting() {
     routing {
@@ -38,6 +46,7 @@ fun Application.configureRouting() {
 
         if (!Database2Api.isEnabledApiAuth()) {
             database2apiRoute()
+            scriptApiRoute()
             return@routing
         }
 
@@ -45,6 +54,7 @@ fun Application.configureRouting() {
         if (Database2Api.getApiAuthType() == Database2Api.AUTH_TYPE_BASIC) {
             authenticate("auth-basic") {
                 database2apiRoute()
+                scriptApiRoute()
             }
         }
 
@@ -54,9 +64,135 @@ fun Application.configureRouting() {
             userLoginRoute()
             authenticate("auth-jwt") {
                 database2apiRoute()
+                scriptApiRoute()
             }
         }
     }
+}
+
+class ExtApiContextRequest(private val call: ApplicationCall) {
+    val uri = call.request.uri
+    val method = call.request.httpMethod.value
+    val headers = call.request.headers.flattenEntries().toMap()
+    val query = call.request.queryParameters.flattenEntries().toMap()
+    var body: Any = Any()
+
+    init {
+        body = runBlocking {
+            try {
+                when (call.request.headers["Content-Type"]) {
+                    "application/x-www-form-urlencoded", "x-www-form-urlencoded", "multipart/form-data" -> {
+                        return@runBlocking call.receiveParameters().flattenEntries().toMap<String, String>()
+                    }
+                    "application/json" -> {
+                        val params = call.receiveText()
+                        if (JSONUtil.isTypeJSONArray(params)) {
+                            return@runBlocking JSONUtil.parseArray(params).toList()
+                        }
+                        return@runBlocking JSONUtil.parseObj(params).toMap()
+                    }
+                    else -> {
+                        return@runBlocking call.receiveText()
+                    }
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                return@runBlocking null
+            }
+        } ?: Any()
+    }
+}
+
+object ExtApiScriptEngineDbTool {
+    fun query(sql: String): Any {
+        StaticLog.info("ExtApiScriptEngineDbTool.query: $sql")
+        return Database2Api.getDbStructureHelper().getDbInstance().query(sql)
+    }
+
+    fun queryOne(sql: String): Any? {
+        StaticLog.info("ExtApiScriptEngineDbTool.queryOne: $sql")
+        return Database2Api.getDbStructureHelper().getDbInstance().queryOne(sql)
+    }
+
+    fun exec(sql: String): Int {
+        StaticLog.info("ExtApiScriptEngineDbTool.exec: $sql")
+        return Database2Api.getDbStructureHelper().getDbInstance().execute(sql)
+    }
+}
+
+object ExtApiScriptEngine {
+    val extApiDir = File(Database2Api.getDataDir(), "ext")
+
+    /**
+     * 执行扩展 API
+     */
+    fun exec(call: ApplicationCall, jsFileName: String): Any? {
+        try {
+            val file = File(extApiDir, jsFileName)
+            if (!file.exists()) {
+                throw Exception("ext api [${jsFileName}] not exists")
+            }
+            val script = file.readText()
+            val engine = ScriptUtil.getJavaScriptEngine()
+            engine.put("db", ExtApiScriptEngineDbTool)
+            engine.put("context", ExtApiContextRequest(call))
+            engine.eval(script)
+            val invocable = engine as Invocable?
+            return invocable?.invokeFunction("main")
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            return null
+        }
+    }
+}
+
+private fun Route.scriptApiRoute() {
+    if (!Database2Api.isEnabledExtApi()) {
+        return
+    }
+    val prefix = Database2Api.getApiPrefix()
+    FileUtil.listFileNames(ExtApiScriptEngine.extApiDir.absolutePath)
+        .filter { it.endsWith(".js") }
+        .map { it.substring(0, it.length - ".js".length) }
+        .forEach { scriptFile ->
+            if (scriptFile.startsWith("get_")) {
+                val apiName = scriptFile.substring("get_".length)
+                if (apiName.isNotEmpty()) {
+                    val apiUrl = "/${prefix}/ext/${apiName}"
+                    get(apiUrl) {
+                        val result = ExtApiScriptEngine.exec(call, "get_${apiName}.js")
+                        call.respond(R.ok(result))
+                    }
+                    StaticLog.info("Database2Api.scriptApiRoute: 创建扩展API[GET:${apiUrl}]成功")
+                }
+            }
+            if (scriptFile.startsWith("post_")) {
+                val apiName = scriptFile.substring("post_".length)
+                if (apiName.isNotEmpty()) {
+                    val apiUrl = "/${prefix}/ext/${apiName}"
+                    post(apiUrl) {
+                        val result = ExtApiScriptEngine.exec(call, "post_${apiName}.js")
+                        call.respond(R.ok(result))
+                    }
+                    StaticLog.info("Database2Api.scriptApiRoute: 创建扩展API[POST:${apiUrl}]成功")
+                }
+            }
+        }
+
+//    get("/script") {
+//        val script = "db.query(\"SELECT *, LENGTH(title) title_len FROM tb_articles\")"
+//        val engine = ScriptUtil.getJavaScriptEngine()
+//        engine.put("db", DbTool)
+//        val result = engine.eval(script)
+//        println("result=${result}")
+////        // 由ScriptEngines实现的接口，其方法允许调用以前已执行的脚本中的过程。
+////        val inv = engine as Invocable
+////        // 调用全局函数，并传入参数
+////        inv.invokeFunction("def", "测试")
+//        call.respond(
+//            R.ok(result)
+//        )
+//    }
 }
 
 /**
@@ -143,3 +279,4 @@ private fun Route.database2apiRoute() {
 }
 
 data class LoginUser(val username: String, val password: String)
+

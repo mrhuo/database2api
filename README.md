@@ -6,7 +6,7 @@
 
 #### **database2api**是使用什么开发的？
 
-使用 [Ktor](https://ktor.io/) + [hutool](https://hutool.cn/) 开发，使用 **Netty** 作为内置服务器，请求速度极快。
+使用 [Kotlin](https://kotlinlang.org/) + [Ktor](https://ktor.io/) 开发，使用 **Netty** 作为内置服务器，请求速度极快。
 
 #### 支持哪些数据库？
 
@@ -17,6 +17,41 @@
 经常有朋友问我，以前有个网站做了很久了，需要更新版本，但是苦于代码耦合太严重，开发新版本工作量太大。
 
 自从有了 **database2api**，直接将数据库连接交于 **database2api**，自动生成全站的 API 接口，再开发独立的 web 界面，新版本的开发问题就迎刃而解了。
+
+#### 什么是扩展 API？
+
+就是写一个JS文件，作为API扩展接口，执行数据库访问，完成API请求的功能。
+
+开启方式，在配置文件里设置 `EXT_API_ENABLED=true`，并在 `data` 目录下创建 `ext` 目录，创建文件 `get_hello`，内容如下：
+
+```js
+function main() {
+    var name = context.query.name || "no name";
+    return "hello " + name;
+}
+```
+
+规定函数名 `main`，重新启动 **database2api** 后可看到控制台提示：
+
+```text
+2024-07-14 17:26:58.380 [main] INFO  com.mrhuo.plugins.RoutingKt - Database2Api.scriptApiRoute: 创建扩展API[GET:/api/ext/hello]成功
+```
+
+访问该API[http://127.0.0.1:8080/api/ext/hello?name=mrhuo]时，返回结果如下：
+
+```json
+{
+  "code": 0,
+  "msg": "OK",
+  "data": "hello mrhuo"
+}
+```
+
+**注意**：扩展API因为用到了脚本引擎来解释执行脚本代码，性能不是太好，如非必要，请勿过度依赖此功能。
+
+扩展API中目前支持 `db`, `context` 两个对象。
+- `db` 对象主要用于数据库查询，提供 `db.query(sql)`, `db.queryOne(sql)`, `db.exec(sql)` 这三个方法
+- `context` 对象主要用于当前请求参数的获取，提供 `context.uri`, `context.method`, `context.headers`, `context.query`, `context.body` 五个对象
 
 #### 已测试数据库
 
@@ -69,6 +104,8 @@ INCLUDE_TABLES=
 IGNORED_TABLES=
 # 是否启用静态网站，启用后，则创建web目录，放入静态资源即可访问
 STATIC_WEB_ENABLED=true
+# 是否开启扩展API，允许用户使用JS代码使用自定义SQL查询数据库
+EXT_API_ENABLED=true
 ```
 
 ###### 数据库连接字符串模板

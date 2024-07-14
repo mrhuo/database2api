@@ -37,6 +37,7 @@ object Database2Api {
     private var mApiAuthUsers: List<Pair<String, String>> = listOf()
     private var mEnabledApiIndex: Boolean = true
     private var mEnabledStaticWeb: Boolean = true
+    private var mEnabledExtApi: Boolean = true
 
     /**
      * 初始化
@@ -95,6 +96,8 @@ object Database2Api {
                 "IGNORED_TABLES=",
                 "# 是否启用静态网站，启用后，则创建web目录，放入静态资源即可访问",
                 "STATIC_WEB_ENABLED=true",
+                "# 是否开启扩展API，允许用户使用JS代码使用自定义SQL查询数据库",
+                "EXT_API_ENABLED=true",
             ),
             mSettingFile,
             CharsetUtil.CHARSET_UTF_8
@@ -113,6 +116,7 @@ object Database2Api {
         mApiAuthType = setting.getStr("API_AUTH_TYPE", "")
         mEnabledApiIndex = setting.getBool("API_INDEX_ENABLED", true)
         mEnabledStaticWeb = setting.getBool("STATIC_WEB_ENABLED", true)
+        mEnabledExtApi = setting.getBool("EXT_API_ENABLED", true)
         // 是否启用静态网站
         if (mEnabledStaticWeb) {
             val webDir = File(mDataDir, "web")
@@ -148,6 +152,15 @@ object Database2Api {
             }
             mApiAuthUsers = userList
         }
+        // 是否启用扩展 API
+        if (mEnabledExtApi) {
+            StaticLog.info("Database2Api: 已启用扩展API功能")
+            val extApiDir = File(mDataDir, "ext")
+            if (!extApiDir.exists()) {
+                extApiDir.mkdirs()
+                StaticLog.info("Database2Api: 创建扩展API目录[${extApiDir.absolutePath}]成功")
+            }
+        }
     }
 
     /**
@@ -178,6 +191,17 @@ object Database2Api {
             mSetting = Setting(mSettingFile.absolutePath, CharsetUtil.CHARSET_UTF_8, true)
         }
         return mSetting!!
+    }
+
+    fun getDbStructureHelper(): DbStructureHelper {
+        return mDbStructureHelper
+    }
+
+    /**
+     * 获取数据目录
+     */
+    fun getDataDir(): File {
+        return mDataDir
     }
 
     /**
@@ -320,7 +344,12 @@ object Database2Api {
         return mEnabledStaticWeb
     }
 
-
+    /**
+     * 是否启用扩展 API
+     */
+    fun isEnabledExtApi(): Boolean {
+        return mEnabledExtApi
+    }
 }
 
 class QueryDataModel {
