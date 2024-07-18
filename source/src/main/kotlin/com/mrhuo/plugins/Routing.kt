@@ -205,6 +205,7 @@ private fun Route.userLoginRoute() {
             R.ok(hashMapOf("token" to token))
         )
     }
+    StaticLog.info("Database2Api.userLoginRoute: 创建JWT登录API[POST:/${prefix}/api-user-login]成功")
 }
 
 /**
@@ -227,6 +228,7 @@ private fun Route.database2apiRoute() {
             val insertCount = db.insert(entity)
             call.respond(if (insertCount > 0) R.ok("添加成功") else R.error("添加失败"))
         }
+        StaticLog.info("Database2Api.database2apiRoute: 创建API[POST:/${prefix}/${tableName}]成功")
         delete("/${prefix}/${tableName}/{id}") {
             val table = Database2Api.getAllTable().first() { it.tableName == tableName }
             val id = call.parameters["id"]
@@ -234,6 +236,7 @@ private fun Route.database2apiRoute() {
             val deleteCount = Database2Api.getDbStructureHelper().getDbInstance().del(tableName, idField, id)
             call.respond(if (deleteCount > 0) R.ok("删除成功") else R.error("删除失败"))
         }
+        StaticLog.info("Database2Api.database2apiRoute: 创建API[DELETE:/${prefix}/${tableName}/{id}]成功")
         put("/${prefix}/${tableName}") {
             val table = Database2Api.getAllTable().first() { it.tableName == tableName }
             val columns = table.columns.map { it.name }
@@ -253,6 +256,7 @@ private fun Route.database2apiRoute() {
             val updateCount = db.update(entity, where)
             call.respond(if (updateCount > 0) R.ok("更新成功") else R.error("更新失败"))
         }
+        StaticLog.info("Database2Api.database2apiRoute: 创建API[PUT:/${prefix}/${tableName}]成功")
         get("/${prefix}/${tableName}/paged") {
             val columns = call.request.queryParameters["columns"] ?: ""
             val page = call.request.queryParameters["page"]?.toIntOrNull()
@@ -270,11 +274,13 @@ private fun Route.database2apiRoute() {
                 R.ok(Database2Api.getTableDataPaged(tableName, model))
             )
         }
+        StaticLog.info("Database2Api.database2apiRoute: 创建API[GET:/${prefix}/${tableName}/paged]成功")
         get("/${prefix}/${tableName}/all") {
             call.respond(
                 R.ok(Database2Api.getTableData(tableName))
             )
         }
+        StaticLog.info("Database2Api.database2apiRoute: 创建API[GET:/${prefix}/${tableName}/all]成功")
         get("/${prefix}/${tableName}/{id}") {
             val table = Database2Api.getAllTable().first() { it.tableName == tableName }
             if (table.columns.isNullOrEmpty()) {
@@ -287,6 +293,7 @@ private fun Route.database2apiRoute() {
                 R.ok(Database2Api.getTableDataById(table.tableName, idField, id))
             )
         }
+        StaticLog.info("Database2Api.database2apiRoute: 创建API[GET:/${prefix}/${tableName}/{id}]成功")
     }
 }
 
