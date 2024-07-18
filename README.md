@@ -1,168 +1,79 @@
-## database2api
+# database2api
+**database2api** means `DataBase to API`, use database, generate open `API`.
 
-#### 什么是 **database2api**？
+**database2api** is a powerful and convenient tool. Its main function is to automatically generate open `API` interfaces based on the existing database, which can significantly save time and energy for developers. It is especially suitable for scenarios where there is an existing database and an `API` interface needs to be provided, or where only the database is built and the `API` interface needs to be implemented quickly.
 
-顾名思义，就是快速、直接的将数据库转化为 API 接口，方便多种应用场景。而且提供了静态文件托管功能，非常实用。
+## I. Function Introduction
+**database2api** can intelligently parse the database structure and automatically generate the corresponding `API` interfaces according to the user's requirements and configuration. It enables you to easily achieve the interaction between the database and external applications without the cumbersome manual coding.
 
-#### **database2api**是使用什么开发的？
+In today's software development, the interaction between the database and external applications is a crucial link. However, manually writing `API` interfaces is often a time-consuming and error-prone task, and it requires proficiency in a certain backend programming language, with a relatively high threshold. The development of **database2api** aims to solve this pain point, allowing developers to focus more on the implementation of business logic rather than spending excessive time and effort on interface development.
 
-使用 [Kotlin](https://kotlinlang.org/) + [Ktor](https://ktor.io/) 开发，使用 **Netty** 作为内置服务器，请求速度极快。
+For example, in a rapidly evolving project, the database structure may change frequently. Using **database2api**, you only need to update the configuration file to quickly regenerate the API interfaces adapted to the new structure, greatly improving the agility of the project.
 
-#### 支持哪些数据库？
+Whether you are an individual developer or a team, **database2api** will be your powerful assistant to enhance development efficiency and accelerate the project process. 
 
-常见的关系数据库如：Sqlite、Oracle、MySQL、PostgreSQL、IBM DB2、Microsoft SQL Server、Sybase、Informix、MariaDb 等数据库都支持。
+## II. Technical Principle
+This tool uses [Ktor](https://ktor.io/) as the underlying framework and `JDBC` as the database access layer. It obtains the database structure through `java.sql.DatabaseMetaData`, and then dynamically registers the `API` routes through `Ktor` to realize the generation of `API` interfaces directly from the database. 
 
-#### 为什么要创造 **database2api**？
+## III. Currently supported databases
+Currently, **database2api** supports the following mainstream databases:
+- ✅ Sqlite
+- ✅ MySQL
+- ✅ Postgresql
+- ✅ Microsoft SQL Server
+- ✅ MariaDb
 
-经常有朋友问我，以前有个网站做了很久了，需要更新版本，但是苦于代码耦合太严重，开发新版本工作量太大。
+## IV. Advantages
+1. **Efficient and convenient**: Through a simple configuration file, the required API interfaces can be quickly generated, greatly improving the development efficiency.
+2. **Widespread database support**: Covers common database types to meet the needs of different projects.
+3. **Easy to maintain**: The generated interface structure is clear, the code is standardized, and it is convenient for subsequent expansion and testing.
 
-自从有了 **database2api**，直接将数据库连接交于 **database2api**，自动生成全站的 API 接口，再开发独立的 web 界面，新版本的开发问题就迎刃而解了。
-
-#### 什么是扩展 API？
-
-就是写一个JS文件，作为API扩展接口，执行数据库访问，完成API请求的功能。
-
-开启方式，在配置文件里设置 `EXT_API_ENABLED=true`，并在 `data` 目录下创建 `ext` 目录，创建文件 `get_hello`，内容如下：
-
-```js
-function main() {
-    var name = context.query.name || "no name";
-    return "hello " + name;
-}
-```
-
-规定函数名 `main`，重新启动 **database2api** 后可看到控制台提示：
-
+## V. How to use
+- [Click to download](https://github.com/mrhuo/database2api/raw/main/release/database2api.jar) or directly clone the repository and compile it into a `jar`, the file name is `database2api.jar`.
+- Preview of the directory structure
 ```text
-2024-07-14 17:26:58.380 [main] INFO  com.mrhuo.plugins.RoutingKt - Database2Api.scriptApiRoute: 创建扩展API[GET:/api/ext/hello]成功
-```
-
-访问该API[http://127.0.0.1:8080/api/ext/hello?name=mrhuo]时，返回结果如下：
-
-```json
-{
-  "code": 0,
-  "msg": "OK",
-  "data": "hello mrhuo"
-}
-```
-
-**注意**：扩展API因为用到了脚本引擎来解释执行脚本代码，性能不是太好，如非必要，请勿过度依赖此功能。
-
-扩展API中目前支持 `db`, `context` 两个对象。
-- `db` 对象主要用于数据库查询，提供 `db.query(sql)`, `db.queryOne(sql)`, `db.exec(sql)` 这三个方法
-- `context` 对象主要用于当前请求参数的获取，提供 `context.uri`, `context.method`, `context.headers`, `context.query`, `context.body` 五个对象
-
-#### 已测试数据库
-
-- [x] Sqlite
-- [x] MySQL
-- [x] PostgreSQL
-- [x] Microsoft SQL Server
-- [x] MariaDb
-- [ ] Oracle
-- [ ] IBM DB2
-- [ ] Sybase
-- [ ] Informix
-
-#### 如何开始使用？
-
-###### 目录结构预览
-
-```text
-│  database2api.jar  <-- 主程序
+│  database2api.jar  <-- Main program (required)
 └─ data
-     └─ web          <-- 静态文件目录
-     └─ setting.ini  <-- 配置文件
+     └─ ext          <-- Directory for placing extended APIs (optional)
+     └─ web          <-- Directory for static files (optional)
+     └─ setting.ini  <-- Configuration file (required)
 ```
-
-###### 配置文件预览(./data/setting.ini)
-
+- Sample configuration file `setting.ini`
 ```text
-## DEFAULT CONFIG FOR database2api
-# API 默认端口
+# Default port for API
 API_PORT=8080
-# 生成API的前缀，如设置 api/v1 后，则API变为：http://localhost:{PORT}/api/v1/xxxxxx
+# Prefix for generating API, if set to api/v1, then the API becomes: http://localhost:{PORT}/api/v1/xxxxxx
 API_PREFIX=api
-# 是否启用 API 文档，地址 http://localhost:{PORT}
+# Whether to enable API documentation, address http://localhost:{PORT}, if set to false, no API documentation will be generated
 API_INDEX_ENABLED=true
-# 是否启用接口授权访问功能
+# Whether to enable the interface authorization access function, default is false, and all APIs can be accessed without authorization and authentication
 API_AUTH_ENABLED=false
-# 接口授权访问，支持：Basic, JWT,
+# Interface authorization access, supports: Basic, JWT. (Other authorization and authentication methods may be supported in the future)
 API_AUTH_TYPE=JWT
-# 接口允许访问的用户名密码列表
+# List of user names and passwords allowed to access the interface
 API_AUTH_USERS=admin:123456,user:1234
-# 数据库默认链接地址
+# Default connection address of the database (mainly the database connection string here is required, and samples of other database connection strings are below)
 DB_URL=jdbc:sqlite://G:/database2api-test/sqlite/fqb.db
-# 数据库用户名
+# Database user name
 DB_USER=
-# 数据库密码
+# Database password
 DB_PWD=
-# 生成API的数据表名称，为空则所有的表都生成API，多个使用英文逗号分割
+# Table names for generating API, if empty, all tables will generate API, multiple tables are separated by commas
 INCLUDE_TABLES=
-# 需要忽略的数据表名称，如果不为空，则指定的表名被过滤，多个使用英文逗号分割
+# Table names that need to be ignored, if not empty, the specified table names will be filtered, multiple tables are separated by commas
 IGNORED_TABLES=
-# 是否启用静态网站，启用后，则创建web目录，放入静态资源即可访问
+# Whether to enable the static website, if enabled, a web directory will be created, and static resources can be accessed by putting them in
 STATIC_WEB_ENABLED=true
-# 是否开启扩展API，允许用户使用JS代码使用自定义SQL查询数据库
+# Whether to enable extended API, allowing users to use JS code to query the database with custom SQL
 EXT_API_ENABLED=true
 ```
 
-###### 数据库连接字符串模板
-
-1. Sqlite
-```text
-DB_URL=jdbc:sqlite://G:/db.db
-```
-
-2. MySQL
-```text
-DB_URL=jdbc:mysql://127.0.0.1:3306/db?useSSL=false&serverTimezone=UTC&charset=utf8mb
-```
-
-3. PostgreSQL
-```text
-DB_URL=jdbc:postgresql://127.0.0.1:5432/db
-```
-
-4. Microsoft SQL Server
-```text
-DB_URL=jdbc:sqlserver://;serverName=rm-abc.sqlserver.rds.aliyuncs.com;port=1433;databaseName=db_cms
-```
-
-5. MariaDb
-
-```text
-jdbc:mariadb://127.0.0.1:3306/mysql?useSSL=false&serverTimezone=UTC&charset=utf8mb4
-```
-
-6. Oracle
-```text
-TODO
-```
-
-7. IBM DB2
-```text
-TODO
-```
-
-8. Sybase
-```text
-TODO
-```
-
-9. Informix
-```text
-TODO
-```
-
-###### 运行方式
-
+- Startup method:
 ```shell
 java -jar database2api.jar
 ```
 
-###### 启动日志类似
+After startup, the console log is as follows:
 
 ```text
 2024-07-11 23:43:14.367 [main] DEBUG cn.hutool.log.LogFactory - Use [Slf4j] Logger As Default.
@@ -181,101 +92,169 @@ java -jar database2api.jar
 2024-07-11 23:43:16.633 [DefaultDispatcher-worker-1] INFO  ktor.application - Responding at http://127.0.0.1:8080
 ```
 
-启动成功后目录结构变为：
+After successful startup, the directory structure becomes:
 
 ```text
 │  database2api.jar
 └─ data
      │  setting.ini
-     │  tables.json      <-- 这是数据库中所有的表名称，下次启动时不会从数据库重新获取，直接使用此文件。如数据库已更新，则删除此文件
-     │  table_names.json <-- 这是数据库中所有表结构，下次启动时不会从数据库重新获取，直接使用此文件。如数据库已更新，则删除此文件
-     └─ web
-         └─ index.html   <-- 这是静态网页默认首页
+     │  tables.json      <-- This is the name of all tables in the database, and it will not be retrieved from the database again on the next startup, and this file will be used directly. If the database has been updated, delete this file.
+     │  table_names.json <-- This is the structure of all tables in the database, and it will not be retrieved from the database again on the next startup, and this file will be used directly. If the database has been updated, delete this file.
+     └─ ext              <-- Directory for placing extended APIs (optional)
+     └─ web              <-- Directory for static files (optional)
+         └─ index.html   <-- This is the default homepage of the static webpage.
 ```
 
-此时，访问链接 [http://127.0.0.1:8080/](http://127.0.0.1:8080/) （端口号在配置文件中定义）
+Open the browser and visit [http://127.0.0.1:8080](http://127.0.0.1:8080). If the configuration `API_INDEX_ENABLED=true` is enabled, the interface will be as follows at this time:
+
+> The port setting can be found in the configuration file `API_PORT=8080`<br/>
+> If `API_INDEX_ENABLED=false` is set, the `API` documentation interface will not be displayed.
 
 ![screenshots/image1.png](screenshots/image1.png)
 
-测试获取所有数据接口：http://127.0.0.1:8080/api/DEVICE/all
+Find a test to get all data at will: `http://127.0.0.1:8080/api/DEVICE/all`
+
+> Here, `DEVICE` is the table name in the database
 
 ![screenshots/image2.png](screenshots/image2.png)
 
-测试分页显示数据接口：http://127.0.0.1:8080/api/DEVICE/paged
+Test paged data display again: http://127.0.0.1:8080/api/DEVICE/paged
 
 ![screenshots/image3.png](screenshots/image3.png)
 
-可以看到，仅仅是配置了数据库链接，就自动生成一个完整的可用的API接口。
+It can be seen that just by configuring the database link, a complete and usable API interface is automatically generated, which is very convenient.
 
-#### 接口加密访问
+## VI. Interface Security
 
-现已支持 Basic、JWT 对API授权，配置如下：
+Two authorization and authentication methods, Basic and JWT, are now supported, and the configuration is as follows:
 
 ```text
-# 是否启用接口授权访问功能
+# Whether to enable the interface authorization access function
 API_AUTH_ENABLED=false
-# 接口授权访问，支持：Basic, JWT,
+# Interface authorization access, supports: Basic, JWT,
 API_AUTH_TYPE=JWT
-# 接口允许访问的用户名密码列表
+# List of user names and passwords allowed to access the interface
 API_AUTH_USERS=admin:123456,user:1234
 ```
 
-###### Basic 授权
+#### Basic Authorization
 
-- 需要配置 `API_AUTH_ENABLED=true` 开启API授权
-- 需要配置 `API_AUTH_TYPE=Basic` （注意大小写）
-- 需要配置 `API_AUTH_USERS=user:pass,user1:pass1`，设置允许访问的用户密码对
+- You need to configure `API_AUTH_ENABLED=true` to enable API authorization
+- You need to configure `API_AUTH_TYPE=Basic` (note the case)
+- You need to configure `API_AUTH_USERS=user:pass,user1:pass1` to set the allowed user password pairs
 
-> Basic 授权失败演示
+> Basic authorization failure demo
 
-![授权失败](screenshots/auth-basic-failed.png)
+![Authorization failure](screenshots/auth-basic-failed.png)
 
-> Basic 授权成功演示
+> Basic authorization success demo
 
-![授权成功](screenshots/auth-basic-success.png)
+![Authorization success](screenshots/auth-basic-success.png)
 
-###### JWT 授权
+#### JWT Authorization
 
-- 需要配置 `API_AUTH_ENABLED=true` 开启API授权
-- 需要配置 `API_AUTH_TYPE=JWT` （注意大小写）
-- 需要配置 `API_AUTH_USERS=user:pass,user1:pass1`，设置允许访问的用户密码对
+- You need to configure `API_AUTH_ENABLED=true` to enable API authorization
+- You need to configure `API_AUTH_TYPE=JWT` (note the case)
+- You need to configure `API_AUTH_USERS=user:pass,user1:pass1` to set the allowed user password pairs
 
-注意，JWT授权，单独提供了一个用户登录接口，路劲为 `/api/api-user-login`，前面的 `api` 前缀，由配置 `API_PREFIX` 来设置
+Note that for JWT authorization, a separate user login interface is provided, and the path is `/api/api-user-login`. The `api` prefix in the front is set by the configuration `API_PREFIX`.
 
-> JWT 验证失败演示
+> JWT verification failure demo
 
-![JWT 验证失败](screenshots/auth-jwt-failed.png)
+![JWT verification failure](screenshots/auth-jwt-failed.png)
 
-> JWT 验证成功演示
+> JWT verification success demo
 
-![JWT 验证成功](screenshots/auth-jwt-success.png)
+![JWT verification success](screenshots/auth-jwt-success.png)
 
-> JWT 用户登录成功演示
+> JWT user login success demo
 
-![用户登录成功](screenshots/auth-jwt-login.png)
+![User login success](screenshots/auth-jwt-login.png)
 
-> JWT 用户登录失败演示
+> JWT user login failure demo
 
-![用户登录失败](screenshots/auth-jwt-login-failed.png)
+![User login failure](screenshots/auth-jwt-login-failed.png)
 
-#### 扩展开发，TODO
+## VII. Advanced Content
 
-- [x] 接口授权访问，已支持：Basic，JWT
-- [ ] 数据表表名安全隐患
-- [ ] 自动生成 UI 管理后台
+#### Extended API
 
-#### 如何联系我？
+Extended API, simply put, is to write a JS file as an API extension interface, perform database access, and complete the function of API requests.
 
-```text
-admin@mrhuo.com
+To enable it, set `EXT_API_ENABLED=true` in the configuration file, create an `ext` directory under the `data` directory, and create the file `get_hello.js` with the following content:
+
+> Note: The file name format is {get|post}_{api_name}.js
+
+```js
+function main() {
+    var name = context.query.name || "no name";
+    return "hello " + name;
+}
 ```
 
-#### 开源地址
+Specify the function name `main`. After restarting **database2api**, you can see the console prompt:
+
+```text
+2024-07-14 17:26:58.380 [main] INFO  com.mrhuo.plugins.RoutingKt - Database2Api.scriptApiRoute: Successfully created extended API [GET:/api/ext/hello]
+```
+
+When accessing this API [http://127.0.0.1:8080/api/ext/hello?name=mrhuo](http://127.0.0.1:8080/api/ext/hello?name=mrhuo), the returned result is as follows:
+
+```json
+{
+  "code": 0,
+  "msg": "OK",
+  "data": "hello mrhuo"
+}
+```
+
+**Note**: Because extended APIs use a scripting engine to interpret and execute script code, the performance is not very good. If not necessary, please do not rely too much on this feature.
+
+Currently, two objects, `db` and `context`, are supported in the extended API.
+
+- The `db` object is mainly used for database queries, providing three methods: `db.query(sql)`, `db.queryOne(sql)`, and `db.exec(sql)`.
+- The `context` object is mainly used to obtain the current request parameters, providing five objects: `context.uri`, `context.method`, `context.headers`, `context.query`, and `context.body`.
+
+## Appendix 1: Database connection string templates
+
+*Note that if the database has a password, you also need to configure `DB_USER` and `DB_PWD`*
+
+1. Sqlite
+
+```text
+DB_URL=jdbc:sqlite://G:/db.db
+```
+
+2. MySQL
+
+```text
+DB_URL=jdbc:mysql://127.0.0.1:3306/db?useSSL=false&serverTimezone=UTC&charset=utf8mb
+```
+
+3. PostgreSQL
+
+```text
+DB_URL=jdbc:postgresql://127.0.0.1:5432/db
+```
+
+4. Microsoft SQL Server
+
+```text
+DB_URL=jdbc:sqlserver://;serverName=rm-abc.sqlserver.rds.aliyuncs.com;port=1433;databaseName=db_cms
+```
+
+5. MariaDb
+
+```text
+jdbc:mariadb://127.0.0.1:3306/mysql?useSSL=false&serverTimezone=UTC&charset=utf8mb4
+```
+
+## Appendix 2: Open source address
 
 ```text
 https://github.com/mrhuo/database2api
 ```
 
-#### 版权提示
+#### Copyright notice
 
 MIT

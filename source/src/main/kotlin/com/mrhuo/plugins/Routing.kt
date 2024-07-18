@@ -1,6 +1,8 @@
 package com.mrhuo.plugins
 
 import cn.hutool.core.io.FileUtil
+import cn.hutool.db.Entity
+import cn.hutool.db.meta.Table
 import cn.hutool.json.JSONUtil
 import cn.hutool.log.StaticLog
 import cn.hutool.script.ScriptUtil
@@ -178,21 +180,6 @@ private fun Route.scriptApiRoute() {
                 }
             }
         }
-
-//    get("/script") {
-//        val script = "db.query(\"SELECT *, LENGTH(title) title_len FROM tb_articles\")"
-//        val engine = ScriptUtil.getJavaScriptEngine()
-//        engine.put("db", DbTool)
-//        val result = engine.eval(script)
-//        println("result=${result}")
-////        // 由ScriptEngines实现的接口，其方法允许调用以前已执行的脚本中的过程。
-////        val inv = engine as Invocable
-////        // 调用全局函数，并传入参数
-////        inv.invokeFunction("def", "测试")
-//        call.respond(
-//            R.ok(result)
-//        )
-//    }
 }
 
 /**
@@ -228,14 +215,43 @@ private fun Route.database2apiRoute() {
     val prefix = Database2Api.getApiPrefix()
     tables.forEach { tableName ->
         post("/${prefix}/${tableName}") {
-            call.respondText("新增${tableName}")
+            val table = Database2Api.getAllTable().first() { it.tableName == tableName }
+            val columns = table.columns.map { it.name }
+            val entity = Entity.create(tableName)
+            // 仅保留包含在数据表结构中的键
+            val postParams = call.receive<Map<String, Any?>>()
+            postParams.filter { columns.contains(it.key) }.forEach { (key, value) ->
+                entity.set(key, value)
+            }
+            val db = Database2Api.getDbStructureHelper().getDbInstance()
+            val insertCount = db.insert(entity)
+            call.respond(if (insertCount > 0) R.ok("添加成功") else R.error("添加失败"))
         }
         delete("/${prefix}/${tableName}/{id}") {
+            val table = Database2Api.getAllTable().first() { it.tableName == tableName }
             val id = call.parameters["id"]
-            call.respondText("删除${id}")
+            val idField = table.getPrimaryKeyColumn()
+            val deleteCount = Database2Api.getDbStructureHelper().getDbInstance().del(tableName, idField, id)
+            call.respond(if (deleteCount > 0) R.ok("删除成功") else R.error("删除失败"))
         }
         put("/${prefix}/${tableName}") {
-            call.respondText("更新${tableName}")
+            val table = Database2Api.getAllTable().first() { it.tableName == tableName }
+            val columns = table.columns.map { it.name }
+            val entity = Entity.create()
+            val idField = table.getPrimaryKeyColumn()
+            val putParams = call.receive<Map<String, Any?>>()
+            val where = Entity.create(tableName)
+            if (!putParams.containsKey(idField)) {
+                call.respond(R.error("更新数据时，必须传递主键${idField}！"))
+                return@put
+            }
+            where.set(idField, putParams[idField])
+            putParams.filter { columns.contains(it.key) && it.key != idField }.forEach { (key, value) ->
+                entity.set(key, value)
+            }
+            val db = Database2Api.getDbStructureHelper().getDbInstance()
+            val updateCount = db.update(entity, where)
+            call.respond(if (updateCount > 0) R.ok("更新成功") else R.error("更新失败"))
         }
         get("/${prefix}/${tableName}/paged") {
             val columns = call.request.queryParameters["columns"] ?: ""
@@ -265,14 +281,10 @@ private fun Route.database2apiRoute() {
                 call.respond(HttpStatusCode.InternalServerError, "表[${table.tableName}]没有任何的列，无法按照ID查询")
                 return@get
             }
-            // 默认是第一个字段
-            var idField = table.columns.first().name
-            if (table.pkNames.isNotEmpty()) {
-                idField = table.pkNames.first()
-            }
-            val obj = call.parameters["id"]
+            val idField = table.getPrimaryKeyColumn()
+            val id = call.parameters["id"]
             call.respond(
-                R.ok(Database2Api.getTableDataById(table.tableName, idField, obj))
+                R.ok(Database2Api.getTableDataById(table.tableName, idField, id))
             )
         }
     }
@@ -280,3 +292,13 @@ private fun Route.database2apiRoute() {
 
 data class LoginUser(val username: String, val password: String)
 
+/**
+ * 获取主键列名，或获取第一个字段作为主键。（注意：这里需要保证每个表有主键）
+ */
+fun Table.getPrimaryKeyColumn(): String {
+    var idField = this.columns.first().name
+    if (this.pkNames.isNotEmpty()) {
+        idField = this.pkNames.first()
+    }
+    return idField
+}
