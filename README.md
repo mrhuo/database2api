@@ -3,7 +3,11 @@
 
 **database2api** is a powerful and convenient tool. Its main function is to automatically generate open `API` interfaces based on the existing database, which can significantly save time and energy for developers. It is especially suitable for scenarios where there is an existing database and an `API` interface needs to be provided, or where only the database is built and the `API` interface needs to be implemented quickly.
 
-## I. Function Introduction
+## RELEASE ✈️
+- 0.0.2 `2024-7-18` First Released Version
+- 0.0.3 `2024-7-20` Add `Bearer` Authentication
+
+## I. Function Introduction ⚡
 **database2api** can intelligently parse the database structure and automatically generate the corresponding `API` interfaces according to the user's requirements and configuration. It enables you to easily achieve the interaction between the database and external applications without the cumbersome manual coding.
 
 In today's software development, the interaction between the database and external applications is a crucial link. However, manually writing `API` interfaces is often a time-consuming and error-prone task, and it requires proficiency in a certain backend programming language, with a relatively high threshold. The development of **database2api** aims to solve this pain point, allowing developers to focus more on the implementation of business logic rather than spending excessive time and effort on interface development.
@@ -12,10 +16,10 @@ For example, in a rapidly evolving project, the database structure may change fr
 
 Whether you are an individual developer or a team, **database2api** will be your powerful assistant to enhance development efficiency and accelerate the project process. 
 
-## II. Technical Principle
+## II. Technical Principle 💛
 This tool uses [Ktor](https://ktor.io/) as the underlying framework and `JDBC` as the database access layer. It obtains the database structure through `java.sql.DatabaseMetaData`, and then dynamically registers the `API` routes through `Ktor` to realize the generation of `API` interfaces directly from the database. 
 
-## III. Currently supported databases
+## III. Supported Databases
 Currently, **database2api** supports the following mainstream databases:
 - ✅ Sqlite
 - ✅ MySQL
