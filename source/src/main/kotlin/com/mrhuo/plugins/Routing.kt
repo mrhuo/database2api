@@ -62,9 +62,17 @@ fun Application.configureRouting() {
 
         // JWT 认证
         if (Database2Api.getApiAuthType() == Database2Api.AUTH_TYPE_JWT) {
-            // TODO: JWT 认证提供了一个登录接口
+            // JWT 认证提供了一个登录接口
             userLoginRoute()
             authenticate("auth-jwt") {
+                database2apiRoute()
+                scriptApiRoute()
+            }
+        }
+
+        // Bearer 认证
+        if (Database2Api.getApiAuthType() == Database2Api.AUTH_TYPE_BEARER) {
+            authenticate("auth-bearer") {
                 database2apiRoute()
                 scriptApiRoute()
             }
