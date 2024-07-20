@@ -48,10 +48,12 @@ API_PREFIX=api
 API_INDEX_ENABLED=true
 # Whether to enable the interface authorization access function, default is false, and all APIs can be accessed without authorization and authentication
 API_AUTH_ENABLED=false
-# Interface authorization access, supports: Basic, JWT. (Other authorization and authentication methods may be supported in the future)
+# Interface authorization access, supports: Basic, JWT, Bearer. (Other authorization and authentication methods may be supported in the future)
 API_AUTH_TYPE=JWT
 # List of user names and passwords allowed to access the interface
 API_AUTH_USERS=admin:123456,user:1234
+# When Bearer authorization is used, it should be configured as [tag:token], where tag represents the attribution of this token, and tag can be empty (the colon cannot be omitted).
+# API_AUTH_USERS=CompanyA:123,CompanyB:456,:789
 # Default connection address of the database (mainly the database connection string here is required, and samples of other database connection strings are below)
 DB_URL=jdbc:sqlite://G:/database2api-test/sqlite/fqb.db
 # Database user name

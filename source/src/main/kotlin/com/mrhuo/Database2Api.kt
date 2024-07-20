@@ -18,11 +18,13 @@ import java.time.Duration
 object Database2Api {
     const val AUTH_TYPE_BASIC = "Basic"
     const val AUTH_TYPE_JWT = "JWT"
+    const val AUTH_TYPE_BEARER = "Bearer"
+
     val JWT_SECRET: String = RandomUtil.randomString(32)
     val JWT_ISSUER: String = "Database2Api"
     val JWT_EXPIRED_AT: Long = Duration.ofDays(2).toMillis()
 
-    private val AUTH_TYPES = listOf(AUTH_TYPE_BASIC, AUTH_TYPE_JWT)
+    private val AUTH_TYPES = listOf(AUTH_TYPE_BASIC, AUTH_TYPE_JWT, AUTH_TYPE_BEARER)
     private var mInit = false
     private lateinit var mDataDir: File
     private lateinit var mSettingFile: File
@@ -80,10 +82,12 @@ object Database2Api {
                 "API_INDEX_ENABLED=true",
                 "# 是否启用接口授权访问功能，默认不启用",
                 "API_AUTH_ENABLED=false",
-                "# 接口授权访问，支持：Basic, JWT。为空不启用",
+                "# 接口授权访问，支持：Basic, JWT, Bearer。为空不启用",
                 "API_AUTH_TYPE=",
                 "# 接口允许访问的用户名密码列表，用户名和密码之间英文冒号隔开，多用户英文逗号分隔",
                 "API_AUTH_USERS=admin:123456,user:1234",
+                "# Bearer 授权时应配置为[tag:token]，tag表示这个token的归属，可为空(冒号不能省略)。",
+                "# API_AUTH_USERS=A公司:123,B公司:456,:789",
                 "# 数据库默认链接地址",
                 "DB_URL=jdbc:mysql://localhost:3306/db?useSSL=false&serverTimezone=UTC&charset=utf8mb4",
                 "# 数据库用户名",
@@ -130,6 +134,8 @@ object Database2Api {
                 webIndex.writeText(indexFileUrl.readText())
             }
             StaticLog.info("Database2Api: 静态网站主页[http://127.0.0.1:${mApiPort}/web/index.html]")
+        } else {
+            StaticLog.info("Database2Api: 已禁用静态网站功能")
         }
         // 是否启用 API 授权访问
         if (mApiAuthEnabled && StrUtil.isNotEmpty(mApiAuthType) && AUTH_TYPES.contains(mApiAuthType)) {
@@ -151,6 +157,8 @@ object Database2Api {
                 }
             }
             mApiAuthUsers = userList
+        } else {
+            StaticLog.info("Database2Api: 已禁用API授权访问功能")
         }
         // 是否启用扩展 API
         if (mEnabledExtApi) {
@@ -160,6 +168,8 @@ object Database2Api {
                 extApiDir.mkdirs()
                 StaticLog.info("Database2Api: 创建扩展API目录[${extApiDir.absolutePath}]成功")
             }
+        } else {
+            StaticLog.info("Database2Api: 已禁用扩展API功能")
         }
     }
 
