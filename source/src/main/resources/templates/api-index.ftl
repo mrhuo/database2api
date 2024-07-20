@@ -321,9 +321,9 @@
             </table>
             <h3>
                 <b>${table.tableName}</b>公开API
-                <button data-table="${table.tableName}" data-columns='${Json.toJson(table.columns)}'
-                        class="test-api-button">测试API
-                </button>
+<#--                <button data-table="${table.tableName}" data-columns='${Json.toJson(table.columns)}'-->
+<#--                        class="test-api-button">测试API-->
+<#--                </button>-->
             </h3>
             <table border="1">
                 <thead>
@@ -430,68 +430,65 @@
     </div>
 </script>
 <script>
-    let API = (function () {
-        let get = function () {
-        };
-        let post = function () {
-        };
-        let put = function () {
-        };
-        let del = function () {
-        };
-        return {
-            get,
-            post,
-            put,
-            delete: del
-        };
-    })();
-
-    function buildInputForm(method, url, columns) {
-        let formTemplate = document.querySelector('#testApiFormTemplate').innerHTML;
-        return formTemplate;
-    }
-
-    function showTestApiDialog(tableName, columns) {
-        let mask = document.querySelector('.mask');
-        let dialogTemplate = document.querySelector('#testApiDialogTemplate').innerHTML;
-        dialogTemplate = dialogTemplate.replaceAll("{{tableName}}", tableName);
-        mask.innerHTML = dialogTemplate;
-        mask.style.display = "block";
-        let dialogCloseBtn = mask.querySelector('.dialog-close-btn');
-        dialogCloseBtn.onclick = function () {
-            mask.style.display = "none";
-            mask.innerHTML = "";
-        }
-
-        let lis = mask.querySelectorAll("li");
-        lis.forEach((li, index) => {
-            li.onclick = function () {
-                console.log(index);
-                let method = this.dataset.method;
-                let url = this.dataset.url;
-                let testApiContent = mask.querySelector('.test-api-content');
-                testApiContent.style.display = "block";
-
-                let testApiReqUrl = mask.querySelector('.test-api-req-url');
-                testApiReqUrl.innerHTML = '<span class="tag">' + method + '</span> ' + url;
-
-                let testApiInputForm = mask.querySelector('.fieldset-group.input');
-                testApiInputForm.querySelector('.test-api-form').innerHTML = buildInputForm(method, url, columns);
-
-                let testApiResult = mask.querySelector('.fieldset-group.result');
-                // testApiResult.querySelector('.test-api-result').innerHTML
-            };
-        });
-    }
-
-    document.querySelectorAll('.test-api-button').forEach(it => {
-        let tableName = it.dataset.table;
-        let columns = it.dataset.columns;
-        it.onclick = function () {
-            showTestApiDialog(tableName, JSON.parse(columns));
-        };
-    });
+    // let API = (function () {
+    //     let get = function () {
+    //     };
+    //     let post = function () {
+    //     };
+    //     let put = function () {
+    //     };
+    //     let del = function () {
+    //     };
+    //     return {
+    //         get,
+    //         post,
+    //         put,
+    //         delete: del
+    //     };
+    // })();
+    // function buildInputForm(method, url, columns) {
+    //     let formTemplate = document.querySelector('#testApiFormTemplate').innerHTML;
+    //     return formTemplate;
+    // }
+    // function showTestApiDialog(tableName, columns) {
+    //     let mask = document.querySelector('.mask');
+    //     let dialogTemplate = document.querySelector('#testApiDialogTemplate').innerHTML;
+    //     dialogTemplate = dialogTemplate.replaceAll("{{tableName}}", tableName);
+    //     mask.innerHTML = dialogTemplate;
+    //     mask.style.display = "block";
+    //     let dialogCloseBtn = mask.querySelector('.dialog-close-btn');
+    //     dialogCloseBtn.onclick = function () {
+    //         mask.style.display = "none";
+    //         mask.innerHTML = "";
+    //     }
+    //
+    //     let lis = mask.querySelectorAll("li");
+    //     lis.forEach((li, index) => {
+    //         li.onclick = function () {
+    //             console.log(index);
+    //             let method = this.dataset.method;
+    //             let url = this.dataset.url;
+    //             let testApiContent = mask.querySelector('.test-api-content');
+    //             testApiContent.style.display = "block";
+    //
+    //             let testApiReqUrl = mask.querySelector('.test-api-req-url');
+    //             testApiReqUrl.innerHTML = '<span class="tag">' + method + '</span> ' + url;
+    //
+    //             let testApiInputForm = mask.querySelector('.fieldset-group.input');
+    //             testApiInputForm.querySelector('.test-api-form').innerHTML = buildInputForm(method, url, columns);
+    //
+    //             let testApiResult = mask.querySelector('.fieldset-group.result');
+    //             // testApiResult.querySelector('.test-api-result').innerHTML
+    //         };
+    //     });
+    // }
+    // document.querySelectorAll('.test-api-button').forEach(it => {
+    //     let tableName = it.dataset.table;
+    //     let columns = it.dataset.columns;
+    //     it.onclick = function () {
+    //         showTestApiDialog(tableName, JSON.parse(columns));
+    //     };
+    // });
 </script>
 </body>
 </html>
