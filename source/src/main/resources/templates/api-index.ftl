@@ -321,9 +321,9 @@
             </table>
             <h3>
                 <b>${table.tableName}</b>公开API
-                <button data-table="${table.tableName}" data-columns='${Json.toJson(table.columns)}'
-                        class="test-api-button">测试API
-                </button>
+<#--                <button data-table="${table.tableName}" data-columns='${Json.toJson(table.columns)}'-->
+<#--                        class="test-api-button">测试API-->
+<#--                </button>-->
             </h3>
             <table border="1">
                 <thead>
@@ -371,127 +371,127 @@
         <div class="mask"></div>
     </div>
 </div>
-<script type="text/html" id="testApiDialogTemplate">
-    <div class="test-api-container">
-        <header>
-            <b>database2api 接口测试工具</b>
-            <span class="dialog-close-btn">×</span>
-        </header>
-        <main>
-            <ul>
-                <li data-method="POST" data-url="/api/{{tableName}}">
-                    <b>POST /api/{{tableName}}</b>
-                    <p>增加数据</p>
-                </li>
-                <li data-method="DELETE" data-url="/api/{{tableName}}/{id}">
-                    <b>DELETE /api/{{tableName}}/{id}</b>
-                    <p>删除数据</p>
-                </li>
-                <li data-method="PUT" data-url="/api/{{tableName}}">
-                    <b>PUT /api/{{tableName}}</b>
-                    <p>更新数据</p>
-                </li>
-                <li data-method="GET" data-url="/api/{{tableName}}/paged">
-                    <b>GET /api/{{tableName}}/paged</b>
-                    <p>分页获取数据，支持参数 columns，page，limit，orderBy，sort</p>
-                </li>
-                <li data-method="GET" data-url="/api/{{tableName}}/all">
-                    <b>GET /api/{{tableName}}/all</b>
-                    <p>获取所有数据，支持参数 columns，orderBy，sort</p>
-                </li>
-                <li data-method="GET" data-url="/api/{{tableName}}/{id}">
-                    <b>GET /api/{{tableName}}/{id}</b>
-                    <p>获取单条数据</p>
-                </li>
-            </ul>
-            <div class="test-api-content" style="display: none">
-                <fieldset class="fieldset-group">
-                    <legend>请求 URL</legend>
-                    <div class="test-api-req-url"></div>
-                </fieldset>
-                <fieldset class="fieldset-group input">
-                    <legend>输入数据</legend>
-                    <div class="test-api-form"></div>
-                </fieldset>
-                <fieldset class="fieldset-group result">
-                    <legend>输出结果</legend>
-                    <div class="test-api-result"></div>
-                </fieldset>
-            </div>
-        </main>
-    </div>
-</script>
-<script type="text/html" id="testApiFormTemplate">
-    <div class="form">
+<#--<script type="text/html" id="testApiDialogTemplate">-->
+<#--    <div class="test-api-container">-->
+<#--        <header>-->
+<#--            <b>database2api 接口测试工具</b>-->
+<#--            <span class="dialog-close-btn">×</span>-->
+<#--        </header>-->
+<#--        <main>-->
+<#--            <ul>-->
+<#--                <li data-method="POST" data-url="/api/{{tableName}}">-->
+<#--                    <b>POST /api/{{tableName}}</b>-->
+<#--                    <p>增加数据</p>-->
+<#--                </li>-->
+<#--                <li data-method="DELETE" data-url="/api/{{tableName}}/{id}">-->
+<#--                    <b>DELETE /api/{{tableName}}/{id}</b>-->
+<#--                    <p>删除数据</p>-->
+<#--                </li>-->
+<#--                <li data-method="PUT" data-url="/api/{{tableName}}">-->
+<#--                    <b>PUT /api/{{tableName}}</b>-->
+<#--                    <p>更新数据</p>-->
+<#--                </li>-->
+<#--                <li data-method="GET" data-url="/api/{{tableName}}/paged">-->
+<#--                    <b>GET /api/{{tableName}}/paged</b>-->
+<#--                    <p>分页获取数据，支持参数 columns，page，limit，orderBy，sort</p>-->
+<#--                </li>-->
+<#--                <li data-method="GET" data-url="/api/{{tableName}}/all">-->
+<#--                    <b>GET /api/{{tableName}}/all</b>-->
+<#--                    <p>获取所有数据，支持参数 columns，orderBy，sort</p>-->
+<#--                </li>-->
+<#--                <li data-method="GET" data-url="/api/{{tableName}}/{id}">-->
+<#--                    <b>GET /api/{{tableName}}/{id}</b>-->
+<#--                    <p>获取单条数据</p>-->
+<#--                </li>-->
+<#--            </ul>-->
+<#--            <div class="test-api-content" style="display: none">-->
+<#--                <fieldset class="fieldset-group">-->
+<#--                    <legend>请求 URL</legend>-->
+<#--                    <div class="test-api-req-url"></div>-->
+<#--                </fieldset>-->
+<#--                <fieldset class="fieldset-group input">-->
+<#--                    <legend>输入数据</legend>-->
+<#--                    <div class="test-api-form"></div>-->
+<#--                </fieldset>-->
+<#--                <fieldset class="fieldset-group result">-->
+<#--                    <legend>输出结果</legend>-->
+<#--                    <div class="test-api-result"></div>-->
+<#--                </fieldset>-->
+<#--            </div>-->
+<#--        </main>-->
+<#--    </div>-->
+<#--</script>-->
+<#--<script type="text/html" id="testApiFormTemplate">-->
+<#--    <div class="form">-->
 
-    </div>
-    <div>
-        <button>请求 API</button>
-    </div>
-</script>
+<#--    </div>-->
+<#--    <div>-->
+<#--        <button>请求 API</button>-->
+<#--    </div>-->
+<#--</script>-->
 <script>
-    let API = (function () {
-        let get = function () {
-        };
-        let post = function () {
-        };
-        let put = function () {
-        };
-        let del = function () {
-        };
-        return {
-            get,
-            post,
-            put,
-            delete: del
-        };
-    })();
-
-    function buildInputForm(method, url, columns) {
-        let formTemplate = document.querySelector('#testApiFormTemplate').innerHTML;
-        return formTemplate;
-    }
-
-    function showTestApiDialog(tableName, columns) {
-        let mask = document.querySelector('.mask');
-        let dialogTemplate = document.querySelector('#testApiDialogTemplate').innerHTML;
-        dialogTemplate = dialogTemplate.replaceAll("{{tableName}}", tableName);
-        mask.innerHTML = dialogTemplate;
-        mask.style.display = "block";
-        let dialogCloseBtn = mask.querySelector('.dialog-close-btn');
-        dialogCloseBtn.onclick = function () {
-            mask.style.display = "none";
-            mask.innerHTML = "";
-        }
-
-        let lis = mask.querySelectorAll("li");
-        lis.forEach((li, index) => {
-            li.onclick = function () {
-                console.log(index);
-                let method = this.dataset.method;
-                let url = this.dataset.url;
-                let testApiContent = mask.querySelector('.test-api-content');
-                testApiContent.style.display = "block";
-
-                let testApiReqUrl = mask.querySelector('.test-api-req-url');
-                testApiReqUrl.innerHTML = '<span class="tag">' + method + '</span> ' + url;
-
-                let testApiInputForm = mask.querySelector('.fieldset-group.input');
-                testApiInputForm.querySelector('.test-api-form').innerHTML = buildInputForm(method, url, columns);
-
-                let testApiResult = mask.querySelector('.fieldset-group.result');
-                // testApiResult.querySelector('.test-api-result').innerHTML
-            };
-        });
-    }
-
-    document.querySelectorAll('.test-api-button').forEach(it => {
-        let tableName = it.dataset.table;
-        let columns = it.dataset.columns;
-        it.onclick = function () {
-            showTestApiDialog(tableName, JSON.parse(columns));
-        };
-    });
+    // let API = (function () {
+    //     let get = function () {
+    //     };
+    //     let post = function () {
+    //     };
+    //     let put = function () {
+    //     };
+    //     let del = function () {
+    //     };
+    //     return {
+    //         get,
+    //         post,
+    //         put,
+    //         delete: del
+    //     };
+    // })();
+    //
+    // function buildInputForm(method, url, columns) {
+    //     let formTemplate = document.querySelector('#testApiFormTemplate').innerHTML;
+    //     return formTemplate;
+    // }
+    //
+    // function showTestApiDialog(tableName, columns) {
+    //     let mask = document.querySelector('.mask');
+    //     let dialogTemplate = document.querySelector('#testApiDialogTemplate').innerHTML;
+    //     dialogTemplate = dialogTemplate.replaceAll("{{tableName}}", tableName);
+    //     mask.innerHTML = dialogTemplate;
+    //     mask.style.display = "block";
+    //     let dialogCloseBtn = mask.querySelector('.dialog-close-btn');
+    //     dialogCloseBtn.onclick = function () {
+    //         mask.style.display = "none";
+    //         mask.innerHTML = "";
+    //     }
+    //
+    //     let lis = mask.querySelectorAll("li");
+    //     lis.forEach((li, index) => {
+    //         li.onclick = function () {
+    //             console.log(index);
+    //             let method = this.dataset.method;
+    //             let url = this.dataset.url;
+    //             let testApiContent = mask.querySelector('.test-api-content');
+    //             testApiContent.style.display = "block";
+    //
+    //             let testApiReqUrl = mask.querySelector('.test-api-req-url');
+    //             testApiReqUrl.innerHTML = '<span class="tag">' + method + '</span> ' + url;
+    //
+    //             let testApiInputForm = mask.querySelector('.fieldset-group.input');
+    //             testApiInputForm.querySelector('.test-api-form').innerHTML = buildInputForm(method, url, columns);
+    //
+    //             let testApiResult = mask.querySelector('.fieldset-group.result');
+    //             // testApiResult.querySelector('.test-api-result').innerHTML
+    //         };
+    //     });
+    // }
+    //
+    // document.querySelectorAll('.test-api-button').forEach(it => {
+    //     let tableName = it.dataset.table;
+    //     let columns = it.dataset.columns;
+    //     it.onclick = function () {
+    //         showTestApiDialog(tableName, JSON.parse(columns));
+    //     };
+    // });
 </script>
 </body>
 </html>

@@ -57,6 +57,7 @@ class DbStructureHelper(
         if (ignored.isNotEmpty()) {
             tableNames = tableNames.filterNot { ignored.contains(it) }
         }
+        // TODO: 当表太多时，这里占用了很长时间，需要解决
         mTableList = tableNames.map { tableName ->
             getTable(tableName)
         }
