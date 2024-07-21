@@ -1,13 +1,25 @@
-# database2api
-**database2api** means `DataBase to API`, use database, generate open `API`.
+<h1 align="center">database2api</h1>
+<p align="center">`DataBase to API`, use database, generate open `API`</p>
+<div align="center">
+
+![GitHub Stars](https://img.shields.io/github/stars/mrhuo/database2api)
+![GitHub License](https://img.shields.io/github/license/mrhuo/database2api)
+![Static Badge](https://img.shields.io/badge/%E5%85%AC%E4%BC%97%E5%8F%B7%3A%E5%BC%80%E5%8F%91%E8%80%85%E7%B2%BE%E9%80%89%E8%B5%84%E8%AE%AF-8A2BE2)
+
+</div>
+
+<hr />
 
 **database2api** is a powerful and convenient tool. Its main function is to automatically generate open `API` interfaces based on the existing database, which can significantly save time and energy for developers. It is especially suitable for scenarios where there is an existing database and an `API` interface needs to be provided, or where only the database is built and the `API` interface needs to be implemented quickly.
 
-## RELEASE ✈️
-- 0.0.2 `2024-7-18` First Released Version
-- 0.0.3 `2024-7-20` Add `Bearer` Authentication
+---
 
-## I. Function Introduction ⚡
+## RELEASE ✈️
+- **0.0.2** `2024-7-18` First Released Version
+- **0.0.3** `2024-7-20` Add `Bearer` Authentication
+- **0.0.4** `2024-7-21` Add `Oracle` Database Support
+
+## I. Introduction ⚡
 **database2api** can intelligently parse the database structure and automatically generate the corresponding `API` interfaces according to the user's requirements and configuration. It enables you to easily achieve the interaction between the database and external applications without the cumbersome manual coding.
 
 In today's software development, the interaction between the database and external applications is a crucial link. However, manually writing `API` interfaces is often a time-consuming and error-prone task, and it requires proficiency in a certain backend programming language, with a relatively high threshold. The development of **database2api** aims to solve this pain point, allowing developers to focus more on the implementation of business logic rather than spending excessive time and effort on interface development.
@@ -16,23 +28,24 @@ For example, in a rapidly evolving project, the database structure may change fr
 
 Whether you are an individual developer or a team, **database2api** will be your powerful assistant to enhance development efficiency and accelerate the project process. 
 
-## II. Technical Principle 💛
+## II. Principle 💛
 This tool uses [Ktor](https://ktor.io/) as the underlying framework and `JDBC` as the database access layer. It obtains the database structure through `java.sql.DatabaseMetaData`, and then dynamically registers the `API` routes through `Ktor` to realize the generation of `API` interfaces directly from the database. 
 
-## III. Supported Databases
+## III. Supported Databases 🌟
 Currently, **database2api** supports the following mainstream databases:
 - ✅ Sqlite
 - ✅ MySQL
 - ✅ Postgresql
 - ✅ Microsoft SQL Server
 - ✅ MariaDb
+- ✅ Oracle
 
-## IV. Advantages
+## IV. Advantages 💥
 1. **Efficient and convenient**: Through a simple configuration file, the required API interfaces can be quickly generated, greatly improving the development efficiency.
 2. **Widespread database support**: Covers common database types to meet the needs of different projects.
 3. **Easy to maintain**: The generated interface structure is clear, the code is standardized, and it is convenient for subsequent expansion and testing.
 
-## V. How to use
+## V. How to use ❓
 - [Click to download](https://github.com/mrhuo/database2api/raw/main/release/database2api.jar) or directly clone the repository and compile it into a `jar`, the file name is `database2api.jar`.
 - Preview of the directory structure
 ```text
@@ -130,7 +143,7 @@ Test paged data display again: http://127.0.0.1:8080/api/DEVICE/paged
 
 It can be seen that just by configuring the database link, a complete and usable API interface is automatically generated, which is very convenient.
 
-## VI. Interface Security
+## VI. Interface Security 🔒
 
 Two authorization and authentication methods, Basic and JWT, are now supported, and the configuration is as follows:
 
@@ -181,7 +194,7 @@ Note that for JWT authorization, a separate user login interface is provided, an
 
 ![User login failure](screenshots/auth-jwt-login-failed.png)
 
-## VII. Advanced Content
+## VII. Advanced 🛸
 
 #### Extended API
 
@@ -255,12 +268,27 @@ DB_URL=jdbc:sqlserver://;serverName=rm-abc.sqlserver.rds.aliyuncs.com;port=1433;
 jdbc:mariadb://127.0.0.1:3306/mysql?useSSL=false&serverTimezone=UTC&charset=utf8mb4
 ```
 
-## Appendix 2: Open source address
+6. Oracle
+
+```text
+jdbc:oracle:thin:@//127.0.0.1:1521/FREE
+```
+
+> Oracle Database User Setting
+
+```text
+# User Name
+DB_USER=SYS as SYSDBA
+# User Pwd
+DB_PWD=123456
+```
+
+## Appendix 2: Open source
 
 ```text
 https://github.com/mrhuo/database2api
 ```
 
-#### Copyright notice
+#### Copyright
 
 MIT
