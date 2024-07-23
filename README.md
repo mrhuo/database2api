@@ -46,7 +46,26 @@ Currently, **database2api** supports the following mainstream databases:
 3. **Easy to maintain**: The generated interface structure is clear, the code is standardized, and it is convenient for subsequent expansion and testing.
 
 ## V. How to use ❓
-- [Click to download](https://github.com/mrhuo/database2api/raw/main/release/database2api.jar) or directly clone the repository and compile it into a `jar`, the file name is `database2api.jar`.
+#### (1) Running on docker (Dockerfile in the directory `./docker`)
+
+i. Build docker image with Dockerfile
+> NOTE: Modify `DB_URL` in the file ./docker/data/setting.ini
+
+```text
+rm -y docker/database2api.jar
+copy release/database2api.jar docker/database2api.jar
+cd docker
+docker build -t database2api:0.0.4 .
+```
+
+ii. Running docker
+```text
+docker run -d -p 8989:8080 -v ./data:/usr/app/data database2api:0.0.4
+```
+
+#### (2) Use `JAR`
+[Click to download](https://github.com/mrhuo/database2api/raw/main/release/database2api.jar) or use `release/database2api.jar`.
+
 - Preview of the directory structure
 ```text
 │  database2api.jar  <-- Main program (required)
@@ -124,6 +143,7 @@ After successful startup, the directory structure becomes:
          └─ index.html   <-- This is the default homepage of the static webpage.
 ```
 
+#### (3) Previews
 Open the browser and visit [http://127.0.0.1:8080](http://127.0.0.1:8080). If the configuration `API_INDEX_ENABLED=true` is enabled, the interface will be as follows at this time:
 
 > The port setting can be found in the configuration file `API_PORT=8080`<br/>
