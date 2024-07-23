@@ -46,7 +46,25 @@
 3. 易于维护：生成的接口结构清晰，代码规范，便于后续的扩展和测试。
 
 ## 五、如何使用 ❓
-- [点击下载](https://github.com/mrhuo/database2api/raw/main/release/database2api.jar) 或直接克隆仓库编译为 `jar`，文件名为 `database2api.jar`。
+#### 一、`Docker` 运行。(Dockerfile 在目录 `./docker`)
+
+1. 构建 Docker 镜像
+> 注意：修改文件 `./docker/data/setting.ini` 中的 `DB_URL`
+
+```text
+rm -y docker/database2api.jar
+copy release/database2api.jar docker/database2api.jar
+cd docker
+docker build -t database2api:0.0.4 .
+```
+
+2. 在 docker 中运行
+```text
+docker run -d -p 8989:8080 -v ./data:/usr/app/data database2api:0.0.4
+```
+
+#### 二、`JAR` 运行
+- [点击下载](https://github.com/mrhuo/database2api/raw/main/release/database2api.jar) 或直接使用 `release/database2api.jar`。
 - 目录结构预览
 ```text
 │  database2api.jar  <-- 主程序（必选）
@@ -122,6 +140,8 @@ java -jar database2api.jar
      └─ web              <-- 静态文件目录（可选）
          └─ index.html   <-- 这是静态网页默认首页
 ```
+
+#### (3) 界面展示
 
 打开浏览器，访问 [http://127.0.0.1:8080](http://127.0.0.1:8080) ，如果开启了配置 `API_INDEX_ENABLED=true`，此时界面如下：
 
