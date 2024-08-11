@@ -1,5 +1,6 @@
 package com.mrhuo.plugins
 
+import cn.hutool.core.date.DateUtil
 import cn.hutool.core.io.FileUtil
 import cn.hutool.db.Entity
 import cn.hutool.db.meta.Table
@@ -12,6 +13,7 @@ import com.mrhuo.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.freemarker.*
 import io.ktor.server.http.content.*
 import io.ktor.server.request.*
@@ -40,6 +42,12 @@ fun Application.configureRouting() {
             }
         }
 
+        if(Database2Api.isEnabledSchemaApi()) {
+            get("/${Database2Api.getApiPrefix()}/schema.json") {
+                call.respond(R.ok(Database2Api.getAllTable()))
+            }
+        }
+
         // 静态网站
         if (Database2Api.isEnabledStaticWeb()) {
             val staticWebFile = File(getRootPath(), "data/web")
@@ -62,9 +70,10 @@ fun Application.configureRouting() {
 
         // JWT 认证
         if (Database2Api.getApiAuthType() == Database2Api.AUTH_TYPE_JWT) {
-            // JWT 认证提供了一个登录接口
+            // JWT 认证提供了一个登录接口、获取已登录用户信息的接口
             userLoginRoute()
             authenticate("auth-jwt") {
+                userLoginInfoRoute()
                 database2apiRoute()
                 scriptApiRoute()
             }
@@ -191,7 +200,7 @@ private fun Route.scriptApiRoute() {
 }
 
 /**
- * 用户登录接口
+ * JWT, 用户登录接口
  */
 private fun Route.userLoginRoute() {
     val prefix = Database2Api.getApiPrefix()
@@ -214,6 +223,35 @@ private fun Route.userLoginRoute() {
         )
     }
     StaticLog.info("Database2Api.userLoginRoute: 创建JWT登录API[POST:/${prefix}/api-user-login]成功")
+}
+
+/**
+ * JWT, 用户登录信息接口
+ */
+private fun Route.userLoginInfoRoute() {
+    val prefix = Database2Api.getApiPrefix()
+    get("/${prefix}/auth/user") {
+        val jwtPrincipal = call.principal<JWTPrincipal>()
+        if (jwtPrincipal == null) {
+            call.respond(
+                R.error("JWTPrincipal is null")
+            )
+            return@get
+        }
+        val username = jwtPrincipal.payload.getClaim("username").asString()
+        val token = call.request.header("Authorization")?.replace("Bearer ", "")
+        val expiredAt = DateUtil.date(jwtPrincipal.expiresAt).toString("yyyy-MM-dd HH:mm:ss")
+        call.respond(
+            R.ok(
+                mapOf(
+                    "username" to username,
+                    "token" to token,
+                    "expiredAt" to expiredAt,
+                )
+            )
+        )
+    }
+    StaticLog.info("Database2Api.userLoginRoute: 创建JWT用户信息API[GET:/${prefix}/auth/user]成功")
 }
 
 /**
@@ -271,12 +309,14 @@ private fun Route.database2apiRoute() {
             val limit = call.request.queryParameters["limit"]?.toIntOrNull()
             val orderBy = call.request.queryParameters["orderBy"]
             val sort = call.request.queryParameters["sort"]
+            val query = call.request.queryParameters["query"]
             val model = QueryDataModel().apply {
                 this.columns = columns
                 this.page = page
                 this.limit = limit
                 this.orderField = orderBy
                 this.sort = sort
+                this.query = query
             }
             call.respond(
                 R.ok(Database2Api.getTableDataPaged(tableName, model))
@@ -284,8 +324,9 @@ private fun Route.database2apiRoute() {
         }
         StaticLog.info("Database2Api.database2apiRoute: 创建API[GET:/${prefix}/${tableName}/paged]成功")
         get("/${prefix}/${tableName}/all") {
+            val query = call.request.queryParameters["query"]
             call.respond(
-                R.ok(Database2Api.getTableData(tableName))
+                R.ok(Database2Api.getTableData(tableName, query))
             )
         }
         StaticLog.info("Database2Api.database2apiRoute: 创建API[GET:/${prefix}/${tableName}/all]成功")
