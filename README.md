@@ -18,6 +18,7 @@
 - **0.0.2** `2024-7-18` First Released Version
 - **0.0.3** `2024-7-20` Add `Bearer` Authentication
 - **0.0.4** `2024-7-21` Add `Oracle` Database Support
+- **0.0.5** `2024-8-11` Delete `jar` File From Repository, Add Query At `list/paged` API.
 
 ## I. Introduction ⚡
 **database2api** can intelligently parse the database structure and automatically generate the corresponding `API` interfaces according to the user's requirements and configuration. It enables you to easily achieve the interaction between the database and external applications without the cumbersome manual coding.
@@ -26,10 +27,10 @@ In today's software development, the interaction between the database and extern
 
 For example, in a rapidly evolving project, the database structure may change frequently. Using **database2api**, you only need to update the configuration file to quickly regenerate the API interfaces adapted to the new structure, greatly improving the agility of the project.
 
-Whether you are an individual developer or a team, **database2api** will be your powerful assistant to enhance development efficiency and accelerate the project process. 
+Whether you are an individual developer or a team, **database2api** will be your powerful assistant to enhance development efficiency and accelerate the project process.
 
 ## II. Principle 💛
-This tool uses [Ktor](https://ktor.io/) as the underlying framework and `JDBC` as the database access layer. It obtains the database structure through `java.sql.DatabaseMetaData`, and then dynamically registers the `API` routes through `Ktor` to realize the generation of `API` interfaces directly from the database. 
+This tool uses [Ktor](https://ktor.io/) as the underlying framework and `JDBC` as the database access layer. It obtains the database structure through `java.sql.DatabaseMetaData`, and then dynamically registers the `API` routes through `Ktor` to realize the generation of `API` interfaces directly from the database.
 
 ## III. Supported Databases 🌟
 Currently, **database2api** supports the following mainstream databases:
