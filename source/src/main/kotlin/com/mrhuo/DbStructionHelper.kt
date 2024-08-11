@@ -10,6 +10,8 @@ import cn.hutool.db.meta.MetaUtil
 import cn.hutool.db.meta.Table
 import cn.hutool.db.sql.Direction
 import cn.hutool.db.sql.Order
+import cn.hutool.json.JSONUtil
+import io.ktor.util.reflect.*
 import javax.sql.DataSource
 
 /**
@@ -23,6 +25,7 @@ class DbStructureHelper(
     companion object {
         private var mTableList: List<Table>? = null
     }
+
     private val dataSource: DataSource
 
     init {
@@ -71,8 +74,27 @@ class DbStructureHelper(
     /**
      * 获取表数据
      */
-    fun getTableData(tableName: String): List<Entity> {
-        return Db.use(dataSource).find(Entity.create(tableName))
+    fun getTableData(tableName: String, query: String? = null): List<Entity> {
+        val entity = Entity.create(tableName)
+        val queryCondition = JSONUtil.parseObj(query ?: "{}")
+        val table = Database2Api.getAllTable().first() { it.tableName == tableName }
+        queryCondition.keys.filter { key ->
+            table.columns.any {
+                it.name.equals(key, true)
+            }
+        }.forEach { key ->
+            val queryItem = queryCondition[key]
+            if (
+                queryItem != null &&
+                queryItem.instanceOf(String::class) &&
+                StrUtil.isNotEmpty(queryItem as String)
+            ) {
+                entity.set(key, "like %${queryItem}%")
+            } else {
+                entity.set(key, queryItem)
+            }
+        }
+        return Db.use(dataSource).find(entity)
     }
 
     /**
@@ -96,11 +118,34 @@ class DbStructureHelper(
                 if ("desc".contentEquals(dataModel.sort, true)) Direction.DESC else Direction.ASC
             )
         }
-        val _page = dataModel.page ?: 0
+        var _page = dataModel.page ?: 0
+        // fix: 一般的UI分页从1开始，所以这里需要保证页数从0开始
+        if (_page > 0) {
+            _page -= 1
+        }
         val _limit = dataModel.limit ?: 10
         val entity = Entity.create(tableName)
         if (StrUtil.isNotEmpty(dataModel.columns)) {
             entity.setFieldNames(dataModel.columns!!.split(","))
+        }
+        val _query = dataModel.query ?: "{}"
+        val queryCondition = JSONUtil.parseObj(_query)
+        val table = Database2Api.getAllTable().first() { it.tableName == tableName }
+        queryCondition.keys.filter { key ->
+            table.columns.any {
+                it.name.equals(key, true)
+            }
+        }.forEach { key ->
+            val queryItem = queryCondition[key]
+            if (
+                queryItem != null &&
+                queryItem.instanceOf(String::class) &&
+                StrUtil.isNotEmpty(queryItem as String)
+            ) {
+                entity.set(key, "like %${queryItem}%")
+            } else {
+                entity.set(key, queryItem)
+            }
         }
         return Db.use(dataSource)
             .page(

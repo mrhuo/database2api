@@ -3,18 +3,18 @@ package com.mrhuo
 import cn.hutool.core.lang.Dict
 import cn.hutool.db.PageResult
 
-data class R(val code: Int, val msg: String, val data: Any? = null) {
+data class R(val code: Int, val message: String, val data: Any? = null) {
     companion object {
         const val ERROR_CODE = 500
         const val OK_CODE = 0
         const val OK_MSG = "OK"
 
-        fun ok(code: Int, msg: String = OK_MSG): R {
-            return R(code, msg)
+        fun ok(code: Int, message: String = OK_MSG): R {
+            return R(code, message)
         }
 
-        fun ok(msg: String = OK_MSG): R {
-            return ok(OK_CODE, msg)
+        fun ok(message: String = OK_MSG): R {
+            return ok(OK_CODE, message)
         }
 
         fun ok(data: Any?): R {
@@ -31,12 +31,12 @@ data class R(val code: Int, val msg: String, val data: Any? = null) {
             return ok(dict)
         }
 
-        fun error(code: Int, msg: String): R {
-            return R(code, msg)
+        fun error(code: Int, message: String): R {
+            return R(code, message)
         }
 
-        fun error(msg: String): R {
-            return error(ERROR_CODE, msg)
+        fun error(message: String): R {
+            return error(ERROR_CODE, message)
         }
 
         fun error(exception: Exception): R {

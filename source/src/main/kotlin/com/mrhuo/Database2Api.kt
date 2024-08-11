@@ -40,6 +40,7 @@ object Database2Api {
     private var mEnabledApiIndex: Boolean = true
     private var mEnabledStaticWeb: Boolean = true
     private var mEnabledExtApi: Boolean = true
+    private var mEnabledSchemaApi: Boolean = false
 
     /**
      * 初始化
@@ -102,6 +103,8 @@ object Database2Api {
                 "STATIC_WEB_ENABLED=true",
                 "# 是否开启扩展API，允许用户使用JS代码使用自定义SQL查询数据库",
                 "EXT_API_ENABLED=true",
+                "# 是否开启表结构API，默认为false",
+                "SCHEMA_API_ENABLED=false"
             ),
             mSettingFile,
             CharsetUtil.CHARSET_UTF_8
@@ -121,6 +124,7 @@ object Database2Api {
         mEnabledApiIndex = setting.getBool("API_INDEX_ENABLED", true)
         mEnabledStaticWeb = setting.getBool("STATIC_WEB_ENABLED", true)
         mEnabledExtApi = setting.getBool("EXT_API_ENABLED", true)
+        mEnabledSchemaApi = setting.getBool("SCHEMA_API_ENABLED", false)
         // 是否启用静态网站
         if (mEnabledStaticWeb) {
             val webDir = File(mDataDir, "web")
@@ -294,8 +298,8 @@ object Database2Api {
     /**
      * 返回数据列表
      */
-    fun getTableData(tableName: String): List<Entity> {
-        return mDbStructureHelper.getTableData(tableName)
+    fun getTableData(tableName: String, query: String? = null): List<Entity> {
+        return mDbStructureHelper.getTableData(tableName, query)
     }
 
     /**
@@ -360,6 +364,13 @@ object Database2Api {
     fun isEnabledExtApi(): Boolean {
         return mEnabledExtApi
     }
+
+    /**
+     * 是否开启表结构 API
+     */
+    fun isEnabledSchemaApi(): Boolean {
+        return mEnabledSchemaApi
+    }
 }
 
 class QueryDataModel {
@@ -368,4 +379,5 @@ class QueryDataModel {
     var limit: Int? = null
     var orderField: String? = null
     var sort: String? = null
+    var query: String? = null
 }
