@@ -21,5 +21,6 @@ fun Application.module() {
     configureSerialization()
     configureFreeMarker()
     configureAuthentication()
+    configureApiCache()
     configureRouting()
 }

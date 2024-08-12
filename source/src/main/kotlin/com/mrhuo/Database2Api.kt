@@ -14,6 +14,7 @@ import cn.hutool.log.StaticLog
 import cn.hutool.setting.Setting
 import java.io.File
 import java.time.Duration
+import javax.xml.crypto.Data
 
 object Database2Api {
     const val AUTH_TYPE_BASIC = "Basic"
@@ -41,6 +42,8 @@ object Database2Api {
     private var mEnabledStaticWeb: Boolean = true
     private var mEnabledExtApi: Boolean = true
     private var mEnabledSchemaApi: Boolean = false
+    private var mEnabledGetApiCache: Boolean = true
+    private var mGetApiCacheTimeout: Long = 30 * 1000L
 
     /**
      * 初始化
@@ -104,7 +107,11 @@ object Database2Api {
                 "# 是否开启扩展API，允许用户使用JS代码使用自定义SQL查询数据库",
                 "EXT_API_ENABLED=true",
                 "# 是否开启表结构API，默认为false",
-                "SCHEMA_API_ENABLED=false"
+                "SCHEMA_API_ENABLED=false",
+                "# 是否开启GET类API缓存，默认为true。对表的CREATE,UPDATE,DELETE操作都会使缓存失效",
+                "GET_API_CACHE=true",
+                "# GET类API缓存时间，默认30s",
+                "GET_API_CACHE_TIMEOUT=30000",
             ),
             mSettingFile,
             CharsetUtil.CHARSET_UTF_8
@@ -125,6 +132,8 @@ object Database2Api {
         mEnabledStaticWeb = setting.getBool("STATIC_WEB_ENABLED", true)
         mEnabledExtApi = setting.getBool("EXT_API_ENABLED", true)
         mEnabledSchemaApi = setting.getBool("SCHEMA_API_ENABLED", false)
+        mEnabledGetApiCache = setting.getBool("GET_API_CACHE", true)
+        mGetApiCacheTimeout = setting.getLong("GET_API_CACHE_TIMEOUT", 30 * 1000L)
         // 是否启用静态网站
         if (mEnabledStaticWeb) {
             val webDir = File(mDataDir, "web")
@@ -153,7 +162,7 @@ object Database2Api {
                 val userPwdPair = it.split(":")
                 val username = userPwdPair[0]
                 val userpass = userPwdPair[1]
-                if (StrUtil.isNotEmpty(username)  && StrUtil.isNotEmpty(userpass)) {
+                if (StrUtil.isNotEmpty(username) && StrUtil.isNotEmpty(userpass)) {
                     userList.add(username to userpass)
                     StaticLog.info("Database2Api: 允许用户[${username}]使用密码[${userpass}]访问")
                 } else {
@@ -370,6 +379,20 @@ object Database2Api {
      */
     fun isEnabledSchemaApi(): Boolean {
         return mEnabledSchemaApi
+    }
+
+    /**
+     * 是否开启 GET API 缓存
+     */
+    fun isEnabledGetApiCache(): Boolean {
+        return mEnabledGetApiCache
+    }
+
+    /**
+     * GET API 缓存时间
+     */
+    fun getApiCacheTimeout(): Long {
+        return mGetApiCacheTimeout
     }
 }
 

@@ -10,6 +10,7 @@ import cn.hutool.script.ScriptUtil
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.mrhuo.*
+import com.ucasoft.ktor.simpleCache.cacheOutput
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -24,7 +25,6 @@ import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.util.*
 import javax.script.Invocable
-
 
 fun Application.configureRouting() {
     routing {
@@ -42,10 +42,12 @@ fun Application.configureRouting() {
             }
         }
 
-        if(Database2Api.isEnabledSchemaApi()) {
-            get("/${Database2Api.getApiPrefix()}/schema.json") {
+        if (Database2Api.isEnabledSchemaApi()) {
+            val prefix = Database2Api.getApiPrefix()
+            get("/${prefix}/schema.json") {
                 call.respond(R.ok(Database2Api.getAllTable()))
             }
+            StaticLog.info("Database2Api.configureRouting: 创建表结构API[GET:/${prefix}/schema.json]成功")
         }
 
         // 静态网站
@@ -303,46 +305,61 @@ private fun Route.database2apiRoute() {
             call.respond(if (updateCount > 0) R.ok("更新成功") else R.error("更新失败"))
         }
         StaticLog.info("Database2Api.database2apiRoute: 创建API[PUT:/${prefix}/${tableName}]成功")
-        get("/${prefix}/${tableName}/paged") {
-            val columns = call.request.queryParameters["columns"] ?: ""
-            val page = call.request.queryParameters["page"]?.toIntOrNull()
-            val limit = call.request.queryParameters["limit"]?.toIntOrNull()
-            val orderBy = call.request.queryParameters["orderBy"]
-            val sort = call.request.queryParameters["sort"]
-            val query = call.request.queryParameters["query"]
-            val model = QueryDataModel().apply {
-                this.columns = columns
-                this.page = page
-                this.limit = limit
-                this.orderField = orderBy
-                this.sort = sort
-                this.query = query
+        if (Database2Api.isEnabledGetApiCache()) {
+            cacheOutput {
+                database2apiGetRoute(tableName)
             }
-            call.respond(
-                R.ok(Database2Api.getTableDataPaged(tableName, model))
-            )
-        }
-        StaticLog.info("Database2Api.database2apiRoute: 创建API[GET:/${prefix}/${tableName}/paged]成功")
-        get("/${prefix}/${tableName}/all") {
-            val query = call.request.queryParameters["query"]
-            call.respond(
-                R.ok(Database2Api.getTableData(tableName, query))
-            )
-        }
-        StaticLog.info("Database2Api.database2apiRoute: 创建API[GET:/${prefix}/${tableName}/all]成功")
-        get("/${prefix}/${tableName}/{id}") {
-            val table = Database2Api.getAllTable().first() { it.tableName == tableName }
-            if (table.columns.isNullOrEmpty()) {
-                call.respond(HttpStatusCode.InternalServerError, "表[${table.tableName}]没有任何的列，无法按照ID查询")
-                return@get
-            }
-            val idField = table.getPrimaryKeyColumn()
-            val id = call.parameters["id"]
-            call.respond(
-                R.ok(Database2Api.getTableDataById(table.tableName, idField, id))
-            )
+        } else {
+            database2apiGetRoute(tableName)
         }
         StaticLog.info("Database2Api.database2apiRoute: 创建API[GET:/${prefix}/${tableName}/{id}]成功")
+    }
+}
+
+/**
+ * 所有 GET API
+ * TODO：以后会优化这里的代码，有点冗余
+ */
+private fun Route.database2apiGetRoute(tableName: String) {
+    val prefix = Database2Api.getApiPrefix()
+    get("/${prefix}/${tableName}/paged") {
+        val columns = call.request.queryParameters["columns"] ?: ""
+        val page = call.request.queryParameters["page"]?.toIntOrNull()
+        val limit = call.request.queryParameters["limit"]?.toIntOrNull()
+        val orderBy = call.request.queryParameters["orderBy"]
+        val sort = call.request.queryParameters["sort"]
+        val query = call.request.queryParameters["query"]
+        val model = QueryDataModel().apply {
+            this.columns = columns
+            this.page = page
+            this.limit = limit
+            this.orderField = orderBy
+            this.sort = sort
+            this.query = query
+        }
+        call.respond(
+            R.ok(Database2Api.getTableDataPaged(tableName, model))
+        )
+    }
+    StaticLog.info("Database2Api.database2apiRoute: 创建API[GET:/${prefix}/${tableName}/paged]成功")
+    get("/${prefix}/${tableName}/all") {
+        val query = call.request.queryParameters["query"]
+        call.respond(
+            R.ok(Database2Api.getTableData(tableName, query))
+        )
+    }
+    StaticLog.info("Database2Api.database2apiRoute: 创建API[GET:/${prefix}/${tableName}/all]成功")
+    get("/${prefix}/${tableName}/{id}") {
+        val table = Database2Api.getAllTable().first() { it.tableName == tableName }
+        if (table.columns.isNullOrEmpty()) {
+            call.respond(HttpStatusCode.InternalServerError, "表[${table.tableName}]没有任何的列，无法按照ID查询")
+            return@get
+        }
+        val idField = table.getPrimaryKeyColumn()
+        val id = call.parameters["id"]
+        call.respond(
+            R.ok(Database2Api.getTableDataById(table.tableName, idField, id))
+        )
     }
 }
 
