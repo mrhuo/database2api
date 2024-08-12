@@ -4,7 +4,17 @@
 
 ![GitHub Stars](https://img.shields.io/github/stars/mrhuo/database2api)
 ![GitHub License](https://img.shields.io/github/license/mrhuo/database2api)
+![GitHub top language](https://img.shields.io/github/languages/top/mrhuo/database2api)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/mrhuo/database2api)
 ![Static Badge](https://img.shields.io/badge/%E5%85%AC%E4%BC%97%E5%8F%B7%3A%E5%BC%80%E5%8F%91%E8%80%85%E7%B2%BE%E9%80%89%E8%B5%84%E8%AE%AF-8A2BE2)
+
+</div>
+
+<div align="center">
+
+[English](https://github.com/mrhuo/database2api/blob/main/README.md)
+|
+[中文](https://github.com/mrhuo/database2api/blob/main/README.zh_CN.md)
 
 </div>
 
@@ -19,6 +29,7 @@
 - **0.0.3** `2024-7-20` 增加 `Bearer` API认证授权
 - **0.0.4** `2024-7-21` 增加 `Oracle` 数据库支持
 - **0.0.5** `2024-8-11` 从仓库中删除 `jar` 文件，在 `list/paged` API 中增加查询
+- **0.0.6** `2024-8-12` 增加 `GET` 类 `API` 缓存支持
 
 ## 一、功能介绍 ⚡
 **database2api** 能够智能地解析数据库结构，并根据用户的需求和配置，自动生成相应的 `API` 接口，让您无需繁琐的手动编码，即可轻松实现数据库与外部应用的交互。
@@ -104,6 +115,12 @@ IGNORED_TABLES=
 STATIC_WEB_ENABLED=true
 # 是否开启扩展API，允许用户使用JS代码使用自定义SQL查询数据库
 EXT_API_ENABLED=true
+# 是否开启表结构API，默认为false
+SCHEMA_API_ENABLED=false
+# 是否开启GET类API缓存，默认为true
+GET_API_CACHE=true
+# GET类API缓存时间，默认30s
+GET_API_CACHE_TIMEOUT=30000
 ```
 - 启动方式：
 ```shell
@@ -254,6 +271,29 @@ function main() {
 - `db` 对象主要用于数据库查询，提供 `db.query(sql)`, `db.queryOne(sql)`, `db.exec(sql)` 这三个方法
 - `context` 对象主要用于当前请求参数的获取，提供 `context.uri`, `context.method`, `context.headers`, `context.query`, `context.body` 五个对象
 
+## 八、API 缓存 🚩
+
+从 `0.0.6` 版本开始默认支持配置 `GET` 类 `API` 缓存，配置如下：
+
+```text
+# 是否开启GET类API缓存，默认为true。对表的CREATE,UPDATE,DELETE操作都会使缓存失效
+GET_API_CACHE=true
+# GET类API缓存时间，默认30s
+GET_API_CACHE_TIMEOUT=30000
+```
+
+配置后启动后控制台会输出类似信息：
+
+```text
+2024-08-12 18:52:05.395 [main] INFO  com.mrhuo.plugins.ApiCacheKt - Database2Api.configureApiCache: 已开启API缓存，缓存时间：10s
+```
+
+如果没有启动缓存，或者缓存时间小于0ms，则启动后控制台会输出类似信息：
+
+```text
+2024-08-12 18:52:57.139 [main] INFO  com.mrhuo.plugins.ApiCacheKt - Database2Api.configureApiCache: 已禁用API缓存
+```
+
 ## 附1：数据库连接字符串模板
 
 *注意如果数据库有密码，还需要配置 `DB_USER` 和 `DB_PWD`*
@@ -303,10 +343,16 @@ DB_USER=SYS as SYSDBA
 DB_PWD=123456
 ```
 
-## 附2：开源
+## 附2：开源 📣
 
 ```text
 https://github.com/mrhuo/database2api
+```
+
+## 附3：相关文档 📝
+
+```text
+待补充
 ```
 
 #### 版权

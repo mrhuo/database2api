@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mrhuo</groupId>
     <artifactId>database2api</artifactId>
-    <version>0.0.5</version>
+    <version>0.0.6</version>
     <name>database2api</name>
     <description>database2api</description>
     <properties>
-        <ktor_version>2.3.2</ktor_version>
+        <ktor_version>2.3.12</ktor_version>
         <kotlin.code.style>official</kotlin.code.style>
         <kotlin_version>1.8.22</kotlin_version>
         <logback_version>1.2.12</logback_version>
@@ -145,7 +145,7 @@
             <plugin>
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <groupId>org.jetbrains.kotlin</groupId>
-                <version>${kotlin_version}</version>
+                <version>1.8.22</version>
                 <configuration>
                     <jvmTarget>1.8</jvmTarget>
                 </configuration>

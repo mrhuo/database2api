@@ -4,7 +4,17 @@
 
 ![GitHub Stars](https://img.shields.io/github/stars/mrhuo/database2api)
 ![GitHub License](https://img.shields.io/github/license/mrhuo/database2api)
+![GitHub top language](https://img.shields.io/github/languages/top/mrhuo/database2api)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/mrhuo/database2api)
 ![Static Badge](https://img.shields.io/badge/%E5%85%AC%E4%BC%97%E5%8F%B7%3A%E5%BC%80%E5%8F%91%E8%80%85%E7%B2%BE%E9%80%89%E8%B5%84%E8%AE%AF-8A2BE2)
+
+</div>
+
+<div align="center">
+
+[English](https://github.com/mrhuo/database2api/blob/main/README.md)
+|
+[中文](https://github.com/mrhuo/database2api/blob/main/README.zh_CN.md)
 
 </div>
 
@@ -18,7 +28,8 @@
 - **0.0.2** `2024-7-18` First Released Version
 - **0.0.3** `2024-7-20` Add `Bearer` Authentication
 - **0.0.4** `2024-7-21` Add `Oracle` Database Support
-- **0.0.5** `2024-8-11` Delete `jar` File From Repository, Add Query At `list/paged` API.
+- **0.0.5** `2024-8-11` Delete `jar` File From Repository, Add Query At `list/paged` API
+- **0.0.6** `2024-8-12` Add `GET API` Cache Support
 
 ## I. Introduction ⚡
 **database2api** can intelligently parse the database structure and automatically generate the corresponding `API` interfaces according to the user's requirements and configuration. It enables you to easily achieve the interaction between the database and external applications without the cumbersome manual coding.
@@ -105,6 +116,12 @@ IGNORED_TABLES=
 STATIC_WEB_ENABLED=true
 # Whether to enable extended API, allowing users to use JS code to query the database with custom SQL
 EXT_API_ENABLED=true
+# Whether to enable the table structure API, and the default is false.
+SCHEMA_API_ENABLED=false
+# Whether to enable GET-type API cache, which defaults to true.
+GET_API_CACHE=true
+# The cache time of GET-type API, default is 30 seconds.
+GET_API_CACHE_TIMEOUT=30000
 ```
 
 - Startup method:
@@ -255,6 +272,29 @@ Currently, two objects, `db` and `context`, are supported in the extended API.
 - The `db` object is mainly used for database queries, providing three methods: `db.query(sql)`, `db.queryOne(sql)`, and `db.exec(sql)`.
 - The `context` object is mainly used to obtain the current request parameters, providing five objects: `context.uri`, `context.method`, `context.headers`, `context.query`, and `context.body`.
 
+## VIII. API Cache 🚩
+
+Starting from version `0.0.6`, by default, it supports configuring the GET type API cache, and the configuration is as follows:
+
+```text
+# Whether to enable GET-type API cache, which defaults to true.
+GET_API_CACHE=true
+# The cache time of GET-type API, default is 30 seconds.
+GET_API_CACHE_TIMEOUT=30000
+```
+
+After configuration and startup, the console will output similar information:
+
+```text
+2024-08-12 18:52:05.395 [main] INFO  com.mrhuo.plugins.ApiCacheKt - Database2Api.configureApiCache: 已开启API缓存，缓存时间：10s
+```
+
+If the cache is not enabled, or the cache time is less than 0 ms, then the console will output similar information after startup:
+
+```text
+2024-08-12 18:52:57.139 [main] INFO  com.mrhuo.plugins.ApiCacheKt - Database2Api.configureApiCache: 已禁用API缓存
+```
+
 ## Appendix 1: Database connection string templates
 
 *Note that if the database has a password, you also need to configure `DB_USER` and `DB_PWD`*
@@ -304,10 +344,16 @@ DB_USER=SYS as SYSDBA
 DB_PWD=123456
 ```
 
-## Appendix 2: Open source
+## Appendix 2: Open source 📣
 
 ```text
 https://github.com/mrhuo/database2api
+```
+
+## Appendix 3: Related documents 📝
+
+```text
+TODO
 ```
 
 #### Copyright
