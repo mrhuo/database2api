@@ -42,14 +42,6 @@ fun Application.configureRouting() {
             }
         }
 
-        if (Database2Api.isEnabledSchemaApi()) {
-            val prefix = Database2Api.getApiPrefix()
-            get("/${prefix}/schema.json") {
-                call.respond(R.ok(Database2Api.getAllTable()))
-            }
-            StaticLog.info("Database2Api.configureRouting: 创建表结构API[GET:/${prefix}/schema.json]成功")
-        }
-
         // 静态网站
         if (Database2Api.isEnabledStaticWeb()) {
             val staticWebFile = File(getRootPath(), "data/web")
@@ -57,6 +49,7 @@ fun Application.configureRouting() {
         }
 
         if (!Database2Api.isEnabledApiAuth()) {
+            database2apiSchemaRoute()
             database2apiRoute()
             scriptApiRoute()
             return@routing
@@ -65,6 +58,7 @@ fun Application.configureRouting() {
         // Basic 认证
         if (Database2Api.getApiAuthType() == Database2Api.AUTH_TYPE_BASIC) {
             authenticate("auth-basic") {
+                database2apiSchemaRoute()
                 database2apiRoute()
                 scriptApiRoute()
             }
@@ -76,6 +70,7 @@ fun Application.configureRouting() {
             userLoginRoute()
             authenticate("auth-jwt") {
                 userLoginInfoRoute()
+                database2apiSchemaRoute()
                 database2apiRoute()
                 scriptApiRoute()
             }
@@ -84,6 +79,7 @@ fun Application.configureRouting() {
         // Bearer 认证
         if (Database2Api.getApiAuthType() == Database2Api.AUTH_TYPE_BEARER) {
             authenticate("auth-bearer") {
+                database2apiSchemaRoute()
                 database2apiRoute()
                 scriptApiRoute()
             }
@@ -254,6 +250,19 @@ private fun Route.userLoginInfoRoute() {
         )
     }
     StaticLog.info("Database2Api.userLoginRoute: 创建JWT用户信息API[GET:/${prefix}/auth/user]成功")
+}
+
+/**
+ * Schema 接口
+ */
+private fun Route.database2apiSchemaRoute() {
+    if (Database2Api.isEnabledSchemaApi()) {
+        val prefix = Database2Api.getApiPrefix()
+        get("/${prefix}/schema.json") {
+            call.respond(R.ok(Database2Api.getAllTable()))
+        }
+        StaticLog.info("Database2Api.configureRouting: 创建表结构API[GET:/${prefix}/schema.json]成功")
+    }
 }
 
 /**
