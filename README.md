@@ -30,6 +30,7 @@
 - **0.0.4** `2024-7-21` Add `Oracle` Database Support
 - **0.0.5** `2024-8-11` Delete `jar` File From Repository, Add Query At `list/paged` API
 - **0.0.6** `2024-8-12` Add `GET API` Cache Support
+- **0.0.7** `2024-8-14` Add `gen-setting` Support. [#17](https://github.com/mrhuo/database2api/issues/17)
 
 ## I. Introduction ⚡
 **database2api** can intelligently parse the database structure and automatically generate the corresponding `API` interfaces according to the user's requirements and configuration. It enables you to easily achieve the interaction between the database and external applications without the cumbersome manual coding.
@@ -87,6 +88,8 @@ docker run -d -p 8989:8080 -v ./data:/usr/app/data database2api:0.0.4
      └─ setting.ini  <-- Configuration file (required)
 ```
 - Sample configuration file `setting.ini`
+> Using the command line tools can quickly generate configuration files, see [#17](https://github.com/mrhuo/database2api/issues/17)
+
 ```text
 # Default port for API
 API_PORT=8080

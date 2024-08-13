@@ -30,6 +30,7 @@
 - **0.0.4** `2024-7-21` 增加 `Oracle` 数据库支持
 - **0.0.5** `2024-8-11` 从仓库中删除 `jar` 文件，在 `list/paged` API 中增加查询
 - **0.0.6** `2024-8-12` 增加 `GET` 类 `API` 缓存支持
+- **0.0.7** `2024-8-14` 增加 `gen-setting` 功能. [#17](https://github.com/mrhuo/database2api/issues/17)
 
 ## 一、功能介绍 ⚡
 **database2api** 能够智能地解析数据库结构，并根据用户的需求和配置，自动生成相应的 `API` 接口，让您无需繁琐的手动编码，即可轻松实现数据库与外部应用的交互。
@@ -86,6 +87,8 @@ docker run -d -p 8989:8080 -v ./data:/usr/app/data database2api:0.0.4
      └─ setting.ini  <-- 配置文件（必选）
 ```
 - 配置文件 `setting.ini` 样例
+> 使用命令行工具可快速生成配置文件，查看 [#17](https://github.com/mrhuo/database2api/issues/17)
+
 ```text
 # API 默认端口
 API_PORT=8080

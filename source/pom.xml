@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mrhuo</groupId>
     <artifactId>database2api</artifactId>
-    <version>0.0.6</version>
+    <version>0.0.7</version>
     <name>database2api</name>
     <description>database2api</description>
     <properties>
